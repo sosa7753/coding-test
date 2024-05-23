@@ -2,45 +2,25 @@ import java.util.*;
 class Solution {
     public int solution(int[] order) {
         int answer = 0;
-        
-        Stack<Integer> stack = new Stack(); // 보조 컨테이너 
-        
-        boolean[] save = new boolean[order.length+1];
-        
-        int top = 1;
-        int now = 0; // 현재 넣은 번호 
-        // 현재 번호를 넣는 방법 구하기 
-        for(int i=0; i<order.length; i++) {
-            
-            if(now < order[i]) {
-                save[order[i]] = true;
-                answer++;
-                now = order[i];
-                
-                while(top < order[i]) {
-                    if(!save[top]) {
-                        save[top] = true;
-                        stack.push(top);                                     
-                    }
-                    top++; 
-                    
+        int cnt = 0;
+
+        Stack<Integer> 보조 = new Stack<>();
+        Queue<Integer> 기존 = new LinkedList<>();
+
+            for(int i=0; i<order.length; i++){
+                보조.add(i+1);
+
+                while(!보조.isEmpty()){
+                    if(보조.peek() == order[cnt]){
+                        기존.offer(보조.pop());
+                        cnt++;
+                    }else break;
+
                 }
-                continue;
             }
-            
-            if(stack.peek() == order[i]) {
-                int tmp = stack.pop();
-                save[tmp] = true;
-                answer++;
-                if(stack.isEmpty()) {
-                    top = 1;
-                }else {
-                    top--;
-                }
-            }else {
-                break;
-            }
-        }
+        // System.out.println("보조 : " + 보조.toString());
+        // System.out.println("기존 : " + 기존.toString());
+        answer = 기존.size();
         return answer;
     }
 }
