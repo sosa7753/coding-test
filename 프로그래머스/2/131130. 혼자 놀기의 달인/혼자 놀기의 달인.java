@@ -41,20 +41,3 @@ class Solution {
         return answer;       
     }
 }    
-//     public void union(int a, int b) {
-//         int aP = find(a);
-//         int bP = find(b);
-        
-//         if(aP != bP) {
-//             parents[b] = aP;
-//         }
-//     }
-    
-//     public int find(int a) {
-//         if(a == parents[a]) {
-//             return a;
-//         }
-        
-//         return parents[a] = find(parents[a]);
-//     }
-// }
