@@ -42,8 +42,14 @@ class Solution {
     }
     
     public boolean check(Map<String, Integer> map) {
-        for(Map.Entry<String, Integer> entry : map.entrySet()) {
-            if(entry.getValue() !=0) {
+        // for(Map.Entry<String, Integer> entry : map.entrySet()) {
+        //     if(entry.getValue() !=0) {
+        //         return false;
+        //     }
+        // }
+        
+        for(int value : map.values()) {
+            if(value != 0) {
                 return false;
             }
         }
