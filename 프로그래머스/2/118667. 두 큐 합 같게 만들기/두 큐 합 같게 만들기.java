@@ -32,7 +32,7 @@ class Solution {
         target = sum/2;
         
         int cnt = 0;
-        while(cnt < len*2) {
+        while(cnt < len*3) {
             if(sum1 == target) {
                 max = Math.min(max, cnt);
                 break;
@@ -54,11 +54,9 @@ class Solution {
             }          
         }
         
-        if(cnt == len * 2) {
+        if(cnt == len * 3) {
             return -1;
         }
-        
         return max;
     }
- 
 }
