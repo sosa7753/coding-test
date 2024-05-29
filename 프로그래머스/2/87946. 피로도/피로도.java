@@ -29,8 +29,6 @@ class Solution {
                 isfalse = true;
             }
         }
-        if(!isfalse) {
-            max = Math.max(max, cnt);
-        }
+        max = Math.max(max, cnt);       
     }
 }
