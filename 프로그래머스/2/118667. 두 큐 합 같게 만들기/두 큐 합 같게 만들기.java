@@ -5,7 +5,7 @@ class Solution {
         int answer = 0;
         max = Integer.MAX_VALUE;
         
-        int len = queue1.length + queue2.length;
+        int len = queue1.length;
         
         long sum = 0;
         long target = 0;
