@@ -50,6 +50,10 @@ class Solution {
             for(int i=0; i<list.get(now.to).size(); i++) {
                 Node node = list.get(now.to).get(i);
                 
+                if(visited[node.to]) {
+                    continue;
+                }
+                               
                 if(dist[node.to] > now.weight + node.weight) {
                     dist[node.to] = now.weight + node.weight;
                     pq.offer(new Node(node.to, dist[node.to]));
