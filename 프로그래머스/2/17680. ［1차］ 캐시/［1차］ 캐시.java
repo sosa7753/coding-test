@@ -1,5 +1,4 @@
 import java.util.*;
-
 // 리스트에 캐시 넣기 
 // 캐시에 없으면 +5 , 캐시에 추가
 // 있으면 +1  리스트에서 꺼내고 다시 넣기
@@ -29,10 +28,7 @@ class Solution {
             // 캐시에 없다면, 
             if(list.size() == cacheSize) { // 캐시가 다 찼다. 
                 list.remove(0);
-                list.add(str);
-                answer += 5;
-                continue;
-            }
+            }           
             
             list.add(str);
             answer += 5;            
