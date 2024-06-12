@@ -1,46 +1,47 @@
+// 모든 학생 수에서 못 받는 학생은 -- 
+// 같은 값은 미리 제거 
+// lost값을 만났다면 체크
+// 작은 값, 큰 값이 reserve에 있다. 작은값 사용 
+// 각각 하나씩 있다. 하나 사용 
+// 그 외 -- 
 import java.util.*;
-import java.util.stream.*;
 class Solution {
     public int solution(int n, int[] lost, int[] reserve) {
-        
         int answer = n;
-        
-        List<Integer> lostList = new ArrayList<>();
-        List<Integer> reserveList = new ArrayList<>();
-        
-        for(int r : reserve) {
-            reserveList.add(r);
+            
+        // reserve  저장 
+        List<Integer> r = new ArrayList<>();
+        for(int i=0; i<reserve.length; i++) {
+            r.add(reserve[i]);
         }
         
-        
-        for(int l : lost) {
-            if(reserveList.contains(l)) { // 도난당한 사람이 여벌을 가지고 있을경우 
-                reserveList.remove(Integer.valueOf(l));
+        // lost 저장
+        List<Integer> l = new ArrayList<>();
+        for(int i=0; i<lost.length; i++) {
+            if(r.contains(lost[i])) {
+                r.remove(Integer.valueOf(lost[i]));
                 continue;
             }
-            lostList.add(l);
+            l.add(lost[i]);
         }
         
+        Collections.sort(r);
+        Collections.sort(l);
         
-        Collections.sort(lostList);
-        Collections.sort(reserveList); 
-        
-        int lostLen = lostList.size();
-        answer = answer - lostLen;
-        
-        for(int i=0; i<lostLen; i++) {
-            int value = lostList.get(i);
+        // lost 순회 
+        for(int i=0; i<l.size(); i++) {
+            int target = l.get(i);
             
-            if(reserveList.contains(value-1)) { // 이전 번호가 빌려줄 수 있음.
-                answer++;
-                reserveList.remove(Integer.valueOf(value-1));
-                continue;              
-            }
-            
-            if(reserveList.contains(value+1)) {
-                answer++;
-                reserveList.remove(Integer.valueOf(value+1));
-                continue;
+            if(r.contains(target-1)) { // 작은 값
+                while(!r.isEmpty() && r.get(0) <= target - 1) {
+                    r.remove(0);
+                }
+            }else if(r.contains(target+1)) { // 큰 값
+                while(!r.isEmpty() && r.get(0) <= target + 1) {
+                    r.remove(0);
+                }
+            }else { // 양쪽이 없음.
+                answer--;
             }
         }
         
