@@ -1,71 +1,63 @@
 import java.util.*;
 class Solution {
-    List<List<Node>> list = new ArrayList<>();
     int[] dist;
+    List<List<int[]>> list = new ArrayList<>();
     public int solution(int n, int[][] edge) {
+        int answer = 0;
         
-        // 리스트 생성
         for(int i=0; i<=n; i++) {
             list.add(new ArrayList<>());
         }
         
-        // 리스트 초기화
         for(int i=0; i<edge.length; i++) {
-            list.get(edge[i][0]).add(new Node(edge[i][1],1));
-            list.get(edge[i][1]).add(new Node(edge[i][0],1));
+            list.get(edge[i][0]).add(new int[] {edge[i][1], 1});
+            list.get(edge[i][1]).add(new int[] {edge[i][0], 1});
         }
-        
-        // 거리 배열 초기화
-        dist = new int[n+1];
-        Arrays.fill(dist, Integer.MAX_VALUE);
         
         Dijkstra(n);
-
-        int max = Integer.MIN_VALUE;
-        int cnt = 0;
-        // 거리 배열로 가장 먼 노드 및 개수 추출 
-        for(int i=2; i<=n; i++) {
-            if(dist[i] > max) {
-                max = dist[i];
-                cnt = 1;
-            }else if(dist[i] == max) {
-                cnt++;
-            }
+        
+        int max = 0;
+        for(int i=1; i<dist.length; i++) {
+            max = Math.max(dist[i], max);
         }
-        return cnt;
+        
+        for(int i=1; i<dist.length; i++) {
+            if(max == dist[i]) {
+                answer++;
+            }
+        }        
+        return answer;
     }
     
     public void Dijkstra(int n) {
         boolean[] visited = new boolean[n+1];
-        PriorityQueue<Node> pq = new PriorityQueue<>((x,y) -> (x.weight - y.weight));
         
-        pq.offer(new Node(1,0));
-        dist[1] = 0;
+        dist = new int[n+1];
+        Arrays.fill(dist, Integer.MAX_VALUE);
+        
+        PriorityQueue<int[]> pq = new PriorityQueue<>((x,y) -> (x[1] - y[1]));
+        pq.offer(new int[] {1, 0});
+        
+        dist[1] = 0; 
         
         while(!pq.isEmpty()) {
-            Node now = pq.poll();
+            int[] now = pq.poll();
             
-            if(visited[now.to]) {
+            if(visited[now[0]]) {
                 continue;
             }
-            visited[now.to] = true;
+            visited[now[0]] = true;
             
-            for(int i=0; i<list.get(now.to).size(); i++) {
-                Node adjNode = list.get(now.to).get(i);
+            for(int i=0; i<list.get(now[0]).size(); i++) {
+                int[] next = list.get(now[0]).get(i);
                 
-                if(dist[adjNode.to] > now.weight + adjNode.weight) {
-                    dist[adjNode.to] = now.weight + adjNode.weight;
-                    pq.offer(new Node(adjNode.to, dist[adjNode.to]));
+                if(dist[next[0]] > next[1] + now[1]) {
+                    dist[next[0]] = next[1] + now[1];
+                    pq.offer(new int[] {next[0], dist[next[0]]});
                 }
             }
         }
-    }
-}
-class Node {
-    int to;
-    int weight;
-    Node(int to, int weight) {
-        this.to = to;
-        this.weight = weight;
+        
+        
     }
 }
