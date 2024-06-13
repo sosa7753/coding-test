@@ -46,9 +46,9 @@ class Solution {
                 int[] next = list.get(now[0]).get(i);
                 
                 if(dist[next[0]] > now[1] + next[1]) {
-                    dist[next[0]] = now[1] + next[1];              
-                }
-                pq.offer(new int[] {next[0], dist[next[0]]});
+                    dist[next[0]] = now[1] + next[1];  
+                    pq.offer(new int[] {next[0], dist[next[0]]});
+                }              
             }
         }
     }
