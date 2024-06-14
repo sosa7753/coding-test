@@ -3,16 +3,16 @@
 
 class Solution {
     String[] friends = {"A", "C", "F", "J", "M", "N", "R", "T"};
+    boolean[] visited = new boolean[8];
     int answer;
     public int solution(int n, String[] data) {
         answer = 0;
-        boolean[] visited = new boolean[8];
-         
-        DFS("", 0, data, visited);
+             
+        DFS("", 0, data);
         return answer;
     }
     
-    public void DFS(String start, int idx, String[] data, boolean[] visited) {
+    public void DFS(String start, int idx, String[] data) {
         if(idx == 8) {
             if(check(start, data)) {
                 answer++;
@@ -28,7 +28,7 @@ class Solution {
             StringBuilder sb = new StringBuilder();
             sb.append(start);
             sb.append(friends[i]);
-            DFS(sb.toString(), idx+1, data, visited);
+            DFS(sb.toString(), idx+1, data);
             visited[i] = false;        
         }          
     }
@@ -40,16 +40,8 @@ class Solution {
             
             char first = str.charAt(0);
             char second = str.charAt(2);
-            
-            int[] tmp = new int[2];
-            int idx = 0;
-            
-            for(int j=0; j<line.length(); j++) {
-                if(line.charAt(j) == first || line.charAt(j) == second) {
-                    tmp[idx++] = j;
-                }
-            }
-            int gap = tmp[1] - tmp[0] -1;
+                       
+            int gap = Math.abs(line.indexOf(first) - line.indexOf(second)) -1;
             
             char c = str.charAt(3);
             int value = str.charAt(4) - '0';
