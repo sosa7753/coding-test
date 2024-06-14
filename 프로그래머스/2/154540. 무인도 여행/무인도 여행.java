@@ -1,69 +1,71 @@
 import java.util.*;
 class Solution {
-    int[] dx = {0,1,0,-1};
-    int[] dy = {-1,0,1,0};
     boolean[][] visited;
-    public int[] solution(String[] maps) {
+    int[] dx = {0, 1, 0, -1};
+    int[] dy = {-1, 0, 1, 0};
+    int n; // 행
+    int m; // 열
+    int cnt;
+    public int[] solution(String[] maps) {        
+        n = maps.length;
+        m = maps[0].length();
+        
+        visited = new boolean[n][m];
+        
         List<Integer> list = new ArrayList<>();
         
-        visited = new boolean[maps.length][maps[0].length()];
-             
-        for(int i=0; i<maps.length; i++) {
-            for(int j=0; j<maps[i].length(); j++) {
-                if(maps[i].charAt(j) == 'X') {
-                    continue;
-                }
-                
+        for(int i=0; i<n; i++) {
+            for(int j=0; j<m; j++) {
                 if(visited[i][j]) {
                     continue;
                 }
                 
-                int tmp = BFS(i,j,maps);      
-                list.add(tmp);
+                if(maps[i].charAt(j) == 'X') {
+                    continue;
+                }
+                cnt = 0;
+                
+                DFS(maps, i,j);
+                list.add(cnt);
             }
         }
-        Collections.sort(list);
         
-        if(list.size() == 0) {
+        if(list.isEmpty()) {
             return new int[] {-1};
         }
+        Collections.sort(list);
+        int[] answer = new int[list.size()];
+        int idx = 0;
+        for(int i=0; i<list.size(); i++) {
+            answer[idx++] = list.get(i);
+        }
         
-        return list.stream().mapToInt(value -> value).toArray();
+        return answer;
     }
     
-    public int BFS(int row, int col, String[] maps) {
-        int result = 0;
-        
-        Queue<int[]> queue = new LinkedList<>();
+    public void DFS(String[] maps, int row, int col) {      
+        if(visited[row][col]) {
+            return;
+        }
         visited[row][col] = true;
-        queue.offer(new int[] {row, col});
+        cnt += maps[row].charAt(col) - '0';
         
-        while(!queue.isEmpty()) {
-            int[] now = queue.poll();
-                    
-            result = result + Integer.parseInt(maps[now[0]].substring(now[1],now[1]+1));
-          
-            for(int i=0; i<4; i++) {
-                int row1 = now[0] + dy[i];
-                int col1 = now[1] + dx[i];
-                
-                if(row1 < 0 || row1 > maps.length-1 || col1 < 0 || col1 > maps[row].length()-1) {
-                    continue;
-                }
-                
-                if(visited[row1][col1]) {
-                    continue;
-                }
-                
-                if(maps[row1].charAt(col1) =='X') {
-                    continue;
-                }
-                
-                visited[row1][col1] = true;
-                queue.offer(new int[] {row1, col1});
+        for(int i=0; i<4; i++) {
+            int r = row + dy[i];
+            int c = col + dx[i];
+            
+            if(r < 0 || r > n-1 || c < 0 || c > m-1) {
+                continue;
             }
             
-        }
-        return result;
-    } 
+            if(maps[r].charAt(c) == 'X') {
+                continue;
+            }
+            
+            if(visited[r][c]) {
+                continue;
+            }
+            DFS(maps,r,c);
+        }     
+    }
 }
