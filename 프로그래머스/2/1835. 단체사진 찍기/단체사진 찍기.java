@@ -2,6 +2,7 @@
 // 경우의 수 마다 만족하는지 계산한다. 
 
 class Solution {
+    StringBuilder sb = new StringBuilder();
     String[] friends = {"A", "C", "F", "J", "M", "N", "R", "T"};
     boolean[] visited = new boolean[8];
     int answer;
@@ -20,16 +21,18 @@ class Solution {
             return;
         }
         
+        
+        sb.append(start);
         for(int i=0; i<8; i++) {
             if(visited[i]) {
                 continue;
             }
             visited[i] = true;
-            StringBuilder sb = new StringBuilder();
-            sb.append(start);
+            
             sb.append(friends[i]);
             DFS(sb.toString(), idx+1, data);
-            visited[i] = false;        
+            visited[i] = false;
+            sb.setLength(start.length());
         }          
     }
     
@@ -41,7 +44,22 @@ class Solution {
             char first = str.charAt(0);
             char second = str.charAt(2);
                        
-            int gap = Math.abs(line.indexOf(first) - line.indexOf(second)) -1;
+            int f = -1;
+            int s = -1;
+            for(int j=0; j<line.length(); j++) {
+                if(line.charAt(j) == first) {
+                    f = j;
+                }
+                
+                if(line.charAt(j) == second) {
+                    s = j;
+                }
+                
+                if(f != -1 && s != -1) {
+                    break;
+                }
+            }            
+            int gap = Math.abs(s-f) -1;
             
             char c = str.charAt(3);
             int value = str.charAt(4) - '0';
