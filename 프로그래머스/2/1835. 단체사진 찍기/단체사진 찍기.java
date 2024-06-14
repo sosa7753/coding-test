@@ -1,21 +1,21 @@
-import java.util.*;
+// DFS로 일렬로 서게 된 문자열 경우의 수를 가진다. 
+// 경우의 수 마다 만족하는지 계산한다. 
+
 class Solution {
-    char[] people = {'A', 'C', 'F', 'J', 'M', 'N', 'R', 'T'};
+    String[] friends = {"A", "C", "F", "J", "M", "N", "R", "T"};
     int answer;
     public int solution(int n, String[] data) {
-        
         answer = 0;
-        char[] friends = new char[8]; // 일렬 배열 
         boolean[] visited = new boolean[8];
-        
-        DFS(visited, friends, data, 0);
+         
+        DFS("", 0, data, visited);
         return answer;
     }
     
-    public void DFS(boolean[] visited, char[] friends, String[] data, int cnt) {
-        if(cnt == friends.length) {
-            if(check(friends, data)) {
-                answer++;      
+    public void DFS(String start, int idx, String[] data, boolean[] visited) {
+        if(idx == 8) {
+            if(check(start, data)) {
+                answer++;
             }
             return;
         }
@@ -24,44 +24,48 @@ class Solution {
             if(visited[i]) {
                 continue;
             }
-            
-           friends[cnt] = people[i];
-           visited[i] = true;
-           DFS(visited, friends, data, cnt+1);
-           visited[i] = false;
-        }
+            visited[i] = true;
+            StringBuilder sb = new StringBuilder();
+            sb.append(start);
+            sb.append(friends[i]);
+            DFS(sb.toString(), idx+1, data, visited);
+            visited[i] = false;        
+        }          
     }
     
-    public boolean check(char[] friends, String[] data) {
-        Map<Character, Integer> map = new HashMap<>();
-        
-        for(int i=0; i<friends.length; i++) {
-            map.put(friends[i], i);
-        }
-        
-        boolean good = true;
+    public boolean check(String line, String[] data) {       
+        boolean isfalse = true;
         for(int i=0; i<data.length; i++) {
-            // data[i]의 길이는 5
-            char first = data[i].charAt(0);
-            char second = data[i].charAt(2);
+            String str = data[i];
             
-            int gap = Math.abs(map.get(second) - map.get(first)) - 1;
+            char first = str.charAt(0);
+            char second = str.charAt(2);
             
-            // 각 부호에 따라 계산 
-            if(data[i].charAt(3) == '=' && (int)(data[i].charAt(4) - '0') == gap) {
+            int[] tmp = new int[2];
+            int idx = 0;
+            
+            for(int j=0; j<line.length(); j++) {
+                if(line.charAt(j) == first || line.charAt(j) == second) {
+                    tmp[idx++] = j;
+                }
+            }
+            int gap = tmp[1] - tmp[0] -1;
+            
+            char c = str.charAt(3);
+            int value = str.charAt(4) - '0';
+            if(c == '=' && value == gap) {
                 continue;
             }
-            
-            if(data[i].charAt(3) == '<' && (int)(data[i].charAt(4) - '0') > gap) {
+            if(c == '<' && value > gap) {
                 continue;
             }
-            
-            if(data[i].charAt(3) == '>' && (int)(data[i].charAt(4) - '0') < gap) {
+            if(c == '>' && value < gap) {
                 continue;
             }
-            good = false;
+            isfalse = false;
             break;
         }
-        return good;        
+        
+        return isfalse;
     }
 }
