@@ -21,7 +21,7 @@ class Solution {
                 if(stack.peek() == '(') {
                     stack.pop();
                 }else {
-                    return false;
+                    stack.push(c);
                 }
             }
         }
