@@ -35,25 +35,19 @@ class Solution {
         
         
         double[] answer = new double[ranges.length];
-        // [0~7], [1,5] ,[3,4];
         for(int i=0; i<ranges.length; i++) {
             int start = ranges[i][0];          
             int end = n + ranges[i][1];
             
             double sum = 0.0;
-            if(start == end) {
-                sum = 0.0;
-            }else if(start > end) {
+            if(start > end) {
                 sum = -1.0;
-            }else if(start == 0) {
-                sum = S[end];
             }else {
                 sum = S[end] - S[start];
             }
                         
             answer[i] = sum;
         }
-        System.out.print(Arrays.toString(S));
         
         return answer;
     }
