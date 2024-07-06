@@ -10,12 +10,11 @@ class Solution {
         for(int i=0; i<score.length; i++) {
             pq.offer(score[i]);
             
-            if(i < k) {
-                answer[idx++] = pq.peek();
-            }else {
+            if(i >= k) {
                 pq.poll();
-                answer[idx++] = pq.peek();
-            }
+            } 
+            
+            answer[idx++] = pq.peek();
         }
         return answer;     
     }
