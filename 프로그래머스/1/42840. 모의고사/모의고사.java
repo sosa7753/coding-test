@@ -3,15 +3,7 @@ class Solution {
     int[] first = {1, 2, 3, 4, 5};
     int[] second = {2, 1, 2, 3, 2, 4, 2, 5};
     int[] third = {3, 3, 1, 1, 2, 2, 4, 4 ,5, 5};
-    public int[] solution(int[] answers) {
-        // 인덱스, 값
-        PriorityQueue<int[]> pq = new PriorityQueue<>((x,y) -> {
-            if(x[1] == y[1]) {
-                return x[0] - y[0];
-            }
-            return y[1] - x[1];
-        });
-        
+    public int[] solution(int[] answers) {      
         int[] result = new int[3];  // 1, 2, 3
         
         for(int i=0; i<answers.length; i++) {
@@ -28,23 +20,18 @@ class Solution {
             }
         }
         
+        int max = 0;
         for(int i=0; i<result.length; i++) {
-            pq.add(new int[] {i+1, result[i]});
+            max = Math.max(result[i], max);
         }
         
         List<Integer> list = new ArrayList<>(); 
-        int[] large = pq.poll();
-        list.add(large[0]);
-        int max = large[1];
         
-        while(!pq.isEmpty()) {
-            int[] now = pq.poll();
-            if(max == now[1]) {
-                list.add(now[0]);
-                continue;
+        for(int i=0; i<result.length; i++) {
+            if(result[i] == max) {
+                list.add(i+1);
             }
-            break;
-        } 
+        }
         
         int[] answer = new int[list.size()];
         for(int i=0; i<list.size(); i++) {
