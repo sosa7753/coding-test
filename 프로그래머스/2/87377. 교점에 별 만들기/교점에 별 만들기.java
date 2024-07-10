@@ -1,78 +1,55 @@
 import java.util.*;
 class Solution {
-    public String[] solution(int[][] line) {
+    public String[] solution(int[][] line) {     
+        long sx = Long.MAX_VALUE;
+        long sy = Long.MAX_VALUE;
+        long ex = Long.MIN_VALUE;
+        long ey = Long.MIN_VALUE;
         
-        // 교점 저장 
-        List<Index> list = new ArrayList<>();
+        List<long[]> list = new ArrayList<>(); // 교점 좌표 
         
-        for(int i = 0; i<line.length-1; i++) {
-            for(int j = i+1; j<line.length; j++) {
+        for(int i=0; i<line.length-1; i++) {
+            for(int j=i+1; j<line.length; j++) {
                 
                 long a = line[i][0]; long b = line[i][1]; long e = line[i][2];
                 long c = line[j][0]; long d = line[j][1]; long f = line[j][2];
                 
-                if(a * d - b * c != 0) {
-                    long div = a * d - b * c;
+                long div = a * d - b * c;
+                if(div !=0) { // 나누는 수가 0이 아닐 때
+                    double x = (double)(b * f - e * d)/(double)div;
+                    double y = (double)(e * c - a * f)/(double)div;
                     
-                    double x = (double)(b * f - e * d)/div;                
-                    double y = (double)(e * c - a * f)/div;
-                    
-                    if(x % 1 == 0 && y % 1 == 0) { // 정수일 때만 저장
-                        list.add(new Index((long)x, (long)y));
-                    }
+                    if(x % 1 == 0 && y % 1 == 0) { // 정수 좌표면 
+                        sx = Math.min((long)x, sx);
+                        sy = Math.min((long)y, sy);
+                        ex = Math.max((long)x, ex);
+                        ey = Math.max((long)y, ey);
+                        
+                        list.add(new long[] {(long)x, (long)y});
+                    }                  
                 }
             }
         }
         
-        Index min = new Index(Long.MAX_VALUE, Long.MAX_VALUE);
-        Index max = new Index(Long.MIN_VALUE, Long.MIN_VALUE);
-        
-        for(Index in : list) {            
-            min.setX(Math.min(in.x, min.x));
-            min.setY(Math.min(in.y, min.y));
-            max.setX(Math.max(in.x, max.x));
-            max.setY(Math.max(in.y, max.y));           
+        // StringBuilder 배열
+        StringBuilder[] sb = new StringBuilder[(int)(ey - sy) + 1];
+        String init = ".".repeat((int)(ex - sx) + 1);
+        for(int i=0; i<sb.length; i++) {
+           sb[i] = new StringBuilder(init);
         }
         
-        int width = (int)(max.x - min.x + 1);
-        int height = (int)(max.y - min.y + 1);
-        
-        char[][] arr = new char[height][width];
-        
-        for(int i=0; i<height; i++) {
-            for(int j=0; j<width; j++) {
-                arr[i][j] = '.';
-            }
+        // 점 찍기
+        for(int i=0; i<list.size(); i++) {
+            long[] now = list.get(i);
+            sb[(int)(ey - now[1])].setCharAt((int)(now[0] - sx), '*');
         }
         
-        // 교점 찍기
-        for(Index in : list) {
-            arr[(int)(max.y-in.y)][(int)(in.x - min.x)] = '*';
-        }
         
-        String[] answer = new String[height];
-        for(int i=0; i < answer.length; i++) {
-            // char 배열을 new String(char[]) 하면 문자열됨
-            answer[i] = new String(arr[i]); 
+        String[] answer = new String[(int)(ey - sy) + 1];  
+        for(int i=0; i<sb.length; i++) {
+            answer[i] = sb[i].toString();
         }
-        
-        return answer;
-    }
-}
 
-class Index{
-    long x;
-    long y;
-    Index(long x, long y) {
-        this.x = x;
-        this.y = y;
-    }
-    
-    void setX(long x) {
-        this.x = x;
-    }
-    
-    void setY(long y) {
-        this.y = y;
+        return answer;
     }
 }
