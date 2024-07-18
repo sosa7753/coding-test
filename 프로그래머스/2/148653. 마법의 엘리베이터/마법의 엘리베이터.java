@@ -1,38 +1,29 @@
 class Solution {
-    public int solution(int storey) {        
-        
-        return DFS(storey, 0);
+    public int solution(int storey) {
+        return DFS(storey);
     }
     
-    public int DFS(int storey, int cnt) {
+    // 16 -> 20 -> 0
+    public int DFS(int storey) {
         if(storey == 0) {
-            return cnt;
-        } 
-        int nextStorey = storey/10;
-        
-        int count = 0; 
-        // 끝 자리가 0이면 패스, 1~4면 감소, 6~9면 증가
-        // 5일 경우 다음 값이 0~4면 감소, 5~9면 증가
-        
+            return 0;
+        }
+            
         int value = storey%10;
-        
-        if(value == 0) {
-            return DFS(nextStorey, cnt);
-        }else if(value <= 4) {
-            count = value;
-            return DFS(nextStorey, cnt + count);
+       
+        // 0~4 일 때 n만큼 감소, 6~9일 때 10 - n 만큼 감소 
+        // 5일 땐 다음 값이 0~4면 +5, 5~9면 10 - n만큼 감소 
+        if(value <= 4) {
+            return value + DFS(storey/10);
         }else if(value >= 6) {
-            count = 10 - value;
-            return DFS(nextStorey+1, cnt + count);
+            return 10 - value + DFS(storey/10 + 1) ;
         }else {
-            int next = nextStorey%10;
-            if(next <= 4) {
-                count = value;
-                return DFS(nextStorey, cnt + count);
+            int check = (storey%100)/10;
+            if(check <=4) {
+                return value + DFS(storey/10);
             }else {
-                count = 10 - value;
-                return DFS(nextStorey+1, cnt + count);
+                return value + DFS(storey/10 + 1);
             }
         }
-    }
+    } 
 }
