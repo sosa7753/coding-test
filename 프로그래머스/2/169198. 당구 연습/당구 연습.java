@@ -40,29 +40,6 @@ class Solution {
                 min = Math.min((int)d4, min);
             }
             
-            // ~~~~~~~ 꼭지점 
-            // (0,0) (0,n) (m,0) (m,n)
-            
-            // (0,0)
-//             if(balls[i][0] * startY != balls[i][1] * startX || 
-//                (startX < balls[i][0] && startY < balls[i][1])) {
-                   
-//                 double d5 = Math.pow(startX + balls[i][0], 2) +
-//                             Math.pow(startY + balls[i][1], 2);
-                
-//                 min = Math.min((int)d5, min);
-//             }
-            
-//             // (0,n)
-//             if(balls[i][0] * startY != balls[i][1] * startX || 
-//                (startX < balls[i][0] && startY < balls[i][1])) {
-                   
-//                 double d5 = Math.pow(startX + balls[i][0], 2) +
-//                             Math.pow(startY + balls[i][1], 2);
-                
-//                 min = Math.min((int)d5, min);
-//             }
-                                
             answer[idx++] = min;
         }
         
