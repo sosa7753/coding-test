@@ -2,12 +2,7 @@ import java.util.*;
 class Solution {
     List<String> list = new ArrayList<>(); // 튜플만 저장 
     public int solution(String[][] relation) {
-        
-        // Set으로 데이터를 저장하자. 이 때 relation의 길이와 Set 길이가 같다면 튜플.
-        // 각 데이터는 DFS를 돌려서 만들어주자.
-        
-        BFS(relation);
-        
+        BFS(relation);        
         return list.size();
     }
     
