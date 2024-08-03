@@ -1,79 +1,65 @@
 import java.util.*;
 class Solution {
     public String[] solution(String[][] plans) {
-        int p = plans.length;
-        String[] answer = new String[p];
+        String[] answer = new String[plans.length];
         int idx = 0;
         
-        // 멈춘 과제 저장소
-        Stack<String[]> stack = new Stack<>();
+        // 인덱스, 시작시각, 남은시각 
+        PriorityQueue<int[]> pq = new PriorityQueue<>((x,y) -> (x[1] - y[1]));
         
-        // 시작 시각으로 배열 정렬
-        Arrays.sort(plans, (x,y) -> (time(x[1]) - time(y[1])));
+        // 인덱스 시작시간, 남은시간
+        Stack<int[]> stack = new Stack<>();
         
-        // plans 반복 
-        for(int i=0; i<p-1; i++) {
-            String[] planF = plans[i];
-            String[] planN = plans[i+1];
+        // 데이터 넣기
+        for(int i=0; i<plans.length; i++) {
+            pq.offer(new int[] {i, time(plans[i][1]), Integer.parseInt(plans[i][2])});
+        }
+    
+        int[] pre = pq.poll();
+        int time = pre[1];
+        
+        while(!pq.isEmpty()) {
+            int[] now = pq.peek();
             
-            // 다음 과목 시작 시간 - 현재 과목 시작 시간 + playTime
-            int gap = time(planN[1]) - (time(planF[1]) + Integer.parseInt(planF[2]));
-            
-            if(gap < 0) { // 시간안에 못 끝냄. 
-                stack.push(new String[] { planF[0], planF[1], String.valueOf(-gap)});
-                continue;
-            }
-            
-            if(gap == 0) { // 딱 맞음.
-                answer[idx++] = planF[0];
-                continue;
-            }
-            
-            if(gap > 0) { // 시간안에 끝내고 여유 시간이 있음.
-                answer[idx++] = planF[0];
-                
-                int gapTmp = gap;
-                while(!stack.isEmpty()) { // Stack에 멈춘 과제가 존재 할 때 
-                    String[] plan = stack.pop();
-                    int remain = Integer.parseInt(plan[2]);
+            // 새로운 과제 시작
+            if(time + pre[2] > now[1]) {
+                stack.push(new int[] {pre[0], pre[1], pre[2] + time - now[1]});
+            }else if(time + pre[2] == now[1]) {
+                answer[idx++] = plans[pre[0]][0];
+            }else { // 과제를 끝내고 시작까지 남은 시간이 있음. 
+                answer[idx++] = plans[pre[0]][0];
+                int r = now[1] - time - pre[2];
+                while(!stack.isEmpty()) {
+                    int[] remain = stack.pop();
                     
-                    if(gapTmp > remain) { // 최근에 멈춘 과제 남은시간 보다 더 여유 있음.
-                        answer[idx++] = plan[0];
-                        gapTmp = gapTmp - remain;
-                        continue;
-                    }
-                    
-                    if(gapTmp == remain) { // 딱 남은 시간 만큼 있음.
-                        answer[idx++] = plan[0];
-                        break;
-                    }
-                    
-                    if(gapTmp < remain) { // 여유 시간으로 과제를 못끝냄. 
-                        plan[2] = String.valueOf(remain - gapTmp);
-                        stack.push(plan);
+                    if(r >= remain[2]) {
+                        answer[idx++] = plans[remain[0]][0];
+                        System.out.print(remain[0] + " ");
+                        r -= remain[2];
+                    }else {
+                        remain[2] -= r;
+                        stack.push(remain);
                         break;
                     }
                 }
-            }
+            }      
+            pre = pq.poll();
+            time = pre[1];
         }
         
-        // 마지막 과목 처리
-        answer[idx++] = plans[p-1][0];
+        answer[idx++] = plans[pre[0]][0];
         
         while(!stack.isEmpty()) {
-            String[] plan = stack.pop();
-            answer[idx++] = plan[0];
+            int[] plan = stack.pop();
+            answer[idx++] = plans[plan[0]][0];
         }
-   
+                
         return answer;
     }
     
-    // 시작 시각을 변환
     public int time(String clock) {
-        int result = 0;
+        String[] s = clock.split(":");
         
-        String[] str = clock.split(":");
-        
-       return result = Integer.parseInt(str[0]) * 60 + Integer.parseInt(str[1]);
+        return Integer.parseInt(s[0]) * 60 + Integer.parseInt(s[1]);
     }
 }
