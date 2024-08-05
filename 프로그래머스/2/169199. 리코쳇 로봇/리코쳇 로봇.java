@@ -17,14 +17,13 @@ class Solution {
                 if(board[i].charAt(j) == 'R') {
                     R[0] = i;
                     R[1] = j;
+                    continue;
                 }
                 
                 if(board[i].charAt(j) == 'G') {
                     G[0] = i;
                     G[1] = j;
-                }
-                
-                
+                }              
             }
         }
         
