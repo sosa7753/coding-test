@@ -1,57 +1,40 @@
 import java.util.*;
 class Solution {
-public int solution(String[][] book_time) {
-              
-    // 시작 시각 기준 오름차순, 같으면 종료시각 빠른순
-    PriorityQueue<String[]> pq = new PriorityQueue<>((x,y) -> {
-        if(x[0].equals(y[0])) {
-            return Integer.compare(time(x[1]), time(y[1]));
-        }else {
-            return Integer.compare(time(x[0]), time(y[0]));
+    public int solution(String[][] book_time) {
+        PriorityQueue<int[]> pq = new PriorityQueue<>((x,y) -> {
+            if(x[0] == y[0]) {
+                return x[1] - y[1];
+            }
+            return x[0] - y[0];
+        });
+        
+        PriorityQueue<int[]> pq2 = new PriorityQueue<>((x,y) -> (x[1] - y[1]));
+        
+        for(int i=0; i<book_time.length; i++) {
+            pq.offer(new int[] {time(book_time[i][0]), time(book_time[i][1])});
         }
-    });
-
-    // 우선순위 큐 초기화
-    for(int i=0; i<book_time.length; i++) {
-                pq.add(book_time[i]);
+        
+        while(!pq.isEmpty()) {
+            int[] now = pq.poll();
+            
+            if(pq2.isEmpty()) {
+                pq2.offer(now);
+                continue;
+            }
+            
+            int[] pre = pq2.peek();
+            if(pre[1] + 10 <= now[0]) {
+                pq2.poll();
+            }
+            pq2.offer(now);               
+        }
+      
+        return pq2.size();
     }
-
-    // room 종료시각 빠른 순
-    PriorityQueue<String> room = new PriorityQueue<>(
-        (x,y) -> (time(x) - time(y))
-    );
-
-
-    while(!pq.isEmpty()) {
-        String[] now = pq.poll();
-
-        // 첫 손님일 경우
-        if(room.isEmpty()) {
-                        room.add(now[1]);
-            continue;
-        }
-
-        // 방이 있을 경우 가장 종료가 빠른 방 추출
-        String roomLast = room.poll();
-
-        // 종료시각+10 <= 시작시각 -> 해당 room에 배정
-        if(time(roomLast) + 10 <= time(now[0])) {
-                        room.add(now[1]);
-            continue;
-        }
-
-        // 배정 불가능
-                room.add(roomLast);
-                room.add(now[1]);
+    
+    public int time(String clock) {
+        String[] s = clock.split(":");
+        
+        return Integer.parseInt(s[0]) * 60 + Integer.parseInt(s[1]);
     }
-
-    return room.size();
-}
-
-// 시각을 숫자로 변환
-public int time(String clock) {
-    String[] str = clock.split(":");
-
-    return Integer.parseInt(str[0]) * 60 + Integer.parseInt(str[1]);
-}
 }
