@@ -1,34 +1,32 @@
 import java.util.*;
 class Solution {
     public int[] solution(int[] numbers) {
+        int[] answer = new int[numbers.length];
         
-        int n = numbers.length;
-        int[] answer = new int[n];
-        Arrays.fill(answer, -1);
-    
         Stack<int[]> stack = new Stack<>();
-    
-        for(int i=0; i<n; i++) {
+        for(int i=0; i<numbers.length; i++) {
             if(stack.isEmpty()) {
                 stack.push(new int[] {numbers[i], i});
                 continue;
             }
-            
+                  
             while(!stack.isEmpty()) {
-                int[] number = stack.peek();
-                
-                if(number[0] < numbers[i]) { // 뒷큰수 성립
-                    answer[number[1]] = numbers[i];
-                    stack.pop();
+                int[] now = stack.peek();
+                if(now[0] < numbers[i]) {
+                    answer[now[1]] = numbers[i];
+                    stack.pop();     
                     continue;
-                }else {
-                    break;
-                }            
+                }
+                break;
             }
-            
-            // 뒷큰수 성립 X
             stack.push(new int[] {numbers[i], i});
         }
+        
+        while(!stack.isEmpty()) {
+            int[] remain = stack.pop();
+            answer[remain[1]] = -1;
+        }
+        
         return answer;
     }
 }
