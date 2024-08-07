@@ -1,27 +1,25 @@
 import java.util.*;
 class Solution {
-    public boolean solution(String s) {
-        boolean answer =  true;
+    boolean solution(String s) {
+        boolean answer = true;
         
         Stack<Character> stack = new Stack<>();
         
         for(int i=0; i<s.length(); i++) {
-            char c = s.charAt(i);
             if(stack.isEmpty()) {
-                if(')' == c) {
+                if(')' == s.charAt(i)) {
                     return false;
                 }
                 stack.push(s.charAt(i));
-                continue;
-            }
-            
-            if('(' == c) {
-                stack.push(c);
             }else {
-                if(stack.peek() == '(') {
-                    stack.pop();
+                if(')' == s.charAt(i)) {
+                    if(stack.peek() == '(') {
+                        stack.pop();
+                    }else {
+                        return false;
+                    }
                 }else {
-                    stack.push(c);
+                    stack.push(s.charAt(i));
                 }
             }
         }
@@ -29,6 +27,7 @@ class Solution {
         if(!stack.isEmpty()) {
             return false;
         }
-        return true;
+        
+        return answer;
     }
 }
