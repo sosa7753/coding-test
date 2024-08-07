@@ -1,28 +1,21 @@
 class Solution {
-    public String solution(String s) {        
+    public String solution(String s) {
+        s = s.toLowerCase();
         
-        s =  s.toLowerCase();
         StringBuilder sb = new StringBuilder();
+        sb.append(s.substring(0,1).toUpperCase());
         
-        boolean first = true;
-        for(int i=0; i<s.length(); i++) {
-            char c = s.charAt(i);
-            if('a' <= c && c <= 'z' && first) { // 소문자면 
-                String sc = String.valueOf(c).toUpperCase();
-                sb.append(sc);
-                first = false;
+        for(int i=1; i<s.length(); i++) {
+            if(s.charAt(i-1) == ' ' && s.charAt(i) != ' ') {
+                sb.append(s.substring(i,i+1).toUpperCase());
                 continue;
             }
-            
-            if(c == ' ') {
-                first = true;
-                sb.append(c);
-                continue;
-            }
-            
-            first = false;
-            sb.append(c);
+            sb.append(s.substring(i, i+1));
         }
         return sb.toString();
+    }
+    
+    public String change(String origin) {
+        return origin.toUpperCase();
     }
 }
