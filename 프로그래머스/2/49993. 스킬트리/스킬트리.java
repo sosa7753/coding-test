@@ -3,38 +3,31 @@ class Solution {
     public int solution(String skill, String[] skill_trees) {
         int answer = 0;
         
+        Map<Character, Integer> map = new HashMap<>();
+        for(int i=0; i<skill.length(); i++) {
+            map.put(skill.charAt(i), i);
+        }
+        
+        
         for(int i=0; i<skill_trees.length; i++) {
-            if(save(skill, skill_trees[i])) {
-                answer++;
-            }
+            int idx = 0;
+            for(int j=0; j<skill_trees[i].length(); j++) {
+                char c = skill_trees[i].charAt(j);
+                if(map.containsKey(c)) {
+                    if(idx == map.get(c)) {
+                        idx++;
+                    }else {
+                        break;
+                    }
+                }
+                
+                if(idx == skill.length() || j == skill_trees[i].length()-1) {
+                    answer++;
+                    break;
+                }
+            }           
         }
         return answer;
-    }
-    
-    public boolean save(String skill, String myTrees) {
-        StringBuilder sb = new StringBuilder();
         
-        Queue<String> queue = new LinkedList<>();
-        
-        String[] str = myTrees.split("");
-        for(String s : str) {
-            queue.offer(s);
-        }
-        
-        while(!queue.isEmpty()) {
-            String sk = queue.poll();
-            
-            if(!skill.contains(sk)) {
-                continue;
-            }
-            sb.append(sk);
-        }
-        
-        for(int i=0; i<sb.toString().length(); i++) {
-            if(skill.charAt(i) != sb.toString().charAt(i)) {
-                return false;
-            }
-        }
-        return true;
     }
 }
