@@ -1,56 +1,37 @@
 import java.util.*;
 class Solution {
     public int[] solution(String s) {
-        PriorityQueue<Set<Integer>> pq = new PriorityQueue<>(
-            (x,y) -> (x.size() - y.size()));
+        PriorityQueue<int[]> pq = new PriorityQueue<>((x,y) -> (y[1] - x[1]));
         
-        int max = 0;
+        Map<String, Integer> map = new HashMap<>();
         
-        String s1 = sideCut(s);
-        
-        String s2 = s1.replace("{", " ").replace("}", " ");
-        
-        String s3 = sideCut(s2);
-        
-        String[] str = s3.split(" , ");
-        
-        
-        for(int i=0; i<str.length; i++) {
-            String[] num = str[i].split(",");
-            Set<Integer> set = new HashSet<>();
-            
-            int cnt = 0;
-             
-            for(int j=0; j<num.length; j++) {
-                set.add(Integer.parseInt(num[j]));
-                cnt++;                
-            }
-            pq.add(set);
-            max = Math.max(max, cnt);        
-        }
-        
-        int[] answer = new int[max];
-        int idx = 0;
-        
-        boolean[] visited = new boolean[100001];
-        
-        while(!pq.isEmpty()) {
-            Set<Integer> set = pq.poll();
-            
-            for(int number : set) {
-                if(visited[number]) {
-                    continue;
+        int start = 0;
+        int end = 0;
+        for(int i=0; i<s.length(); i++) {
+            if(!Character.isDigit(s.charAt(i))) {
+                if(start != end) {
+                    String str = s.substring(start, end);
+                    map.put(str, map.getOrDefault(str, 0) + 1);
                 }
-                visited[number] = true;
-                answer[idx++] = number;
+                end++;
+                start = end;
+                continue;
             }
+            
+            end++;            
         }
         
-        return answer;
-    }
-    
-    public String sideCut(String s) {
+        for(Map.Entry<String, Integer> entry : map.entrySet()) {
+            pq.offer(new int[] {Integer.parseInt(entry.getKey()), entry.getValue()});
+        }
         
-        return s.substring(1, s.length()-1);
+        int[] answer = new int[pq.size()];
+        int idx = 0;
+        while(!pq.isEmpty()) {
+            int[] now = pq.poll();
+            answer[idx++] = now[0];
+        }
+     
+        return answer;
     }
 }
