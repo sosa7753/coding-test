@@ -1,66 +1,65 @@
 class Solution {
-    int[] discount = {10, 20, 30, 40};
-    int max = 0;
+    int[] percent = {10, 20, 30, 40};
+    int[] arr;
+    int member = 0;
     int cash = 0;
     public int[] solution(int[][] users, int[] emoticons) {
         int[] answer = new int[2];
         
-        int[] percent = new int[emoticons.length];
+        arr = new int[emoticons.length];
         
-        DFS(users, emoticons, percent, 0);
-        answer[0] = max;
+        DFS(users, emoticons, 0);
+        
+        answer[0] = member;
         answer[1] = cash;
-        
         return answer;
     }
     
-    public void DFS(int[][] users, int[] emoticons, int[] percent, int cnt) {
-        // 이모티콘 할인 책정 완료
+    public void DFS(int[][] users, int[] emoticons, int cnt) {
         if(cnt == emoticons.length) {
-            cal(users, emoticons, percent);
+            cal(users, emoticons);
             return;
         }
         
-        for(int i=0; i<discount.length; i++) {
-            percent[cnt] = discount[i]; 
-            DFS(users, emoticons, percent, cnt+1);
-        }
+        for(int i=0; i<4; i++) {
+            arr[cnt] = percent[i];
+            DFS(users, emoticons, cnt+1);
+        }      
     }
     
-    public void cal(int[][] users, int[] emoticons, int[] percent) {
-        int sub = 0;
-        int result = 0;
+    public void cal(int[][] users, int[] emoticons) {
         
-        for(int i=0; i<users.length; i++) { // 각 유저에 대해 
+        int user = 0;
+        int money = 0;
+        
+        for(int[] u : users) {
             int sum = 0;
-            boolean isfalse = false;
-            for(int j=0; j<emoticons.length; j++) { // 이모티콘 마다 
-                
-                if(percent[j] < users[i][0]) {
-                    continue;
+            int us = 0;
+            for(int i=0; i<arr.length; i++) {
+                if(arr[i] >= u[0]) {
+                    sum += emoticons[i] * (100 - arr[i]) / 100;
                 }
                 
-                sum += emoticons[j] * (100-percent[j]) / 100;
-                if(sum >= users[i][1]) {
-                    sub++;
-                    isfalse = true;
+                if(sum >= u[1]) {
+                    us++;
                     break;
                 }
             }
             
-            if(!isfalse) {
-                result += sum;
+            if(us == 0) {
+                money += sum;
+            }else {
+                user++;
             }
-        }
+        }        
         
-        if(max < sub) {
-            max = sub;
-            cash = result;
-            return;
-        }else if( max == sub && result > cash) {
-            max = sub;
-            cash = result;
-            return;
+        if(user > member) {
+            member = user;
+            cash = money;
+        }else if(user == member) {
+            if(money > cash) {
+                cash = money;
+            } 
         }
-    } 
+    }
 }
