@@ -1,43 +1,63 @@
 import java.util.*;
 class Solution {
+    int[] parent;
     public int solution(int[] cards) {
+        PriorityQueue<int[]> pq = new PriorityQueue<>((x,y) -> (y[1] - x[1]));
         int answer = 0;
         
-        List<Integer> list = new ArrayList<>();
-               
+        parent = new int[cards.length];
+        
+        for(int i=0; i<cards.length; i++) {
+            parent[i] = i;
+        }
+        
         boolean[] visited = new boolean[cards.length];
         
-        // 부모배열이 같은지 체크, 아닐 경우 같게 찾기 
-
         for(int i=0; i<cards.length; i++) {
             if(visited[i]) {
                 continue;
             }
             visited[i] = true;
-            int start = i+1;
-            int end = cards[i];
-            int cnt = 1;
-
-            // 종료 조건 : 부모와 값이 같을 때, 이미 방문 했을 때 
-            while(start != end && visited[end-1] == false) {
-                
-                cnt++;
-                visited[end-1] = true;
-                start = end;
-                end = cards[start-1];
-            }
             
-            list.add(cnt);                
-            
+            if(find(i) != find(cards[i]-1)) {
+                union(find(i), find(cards[i]-1));
+            }     
         }
         
-        Collections.sort(list, (x,y) ->(y-x));
-        if(list.size() == 1) {
-            return 0;
+        Map<Integer, Integer> map = new HashMap<>();
+        for(int i=0; i<parent.length; i++) {
+            map.put(find(i), map.getOrDefault(find(i), 0) + 1);
         }
-        int a = list.remove(0);
-        int b = list.remove(0);
-        answer = a * b;
-        return answer;       
+        
+        for(Map.Entry<Integer, Integer> entry : map.entrySet()) {
+            pq.offer(new int[] {entry.getKey(), entry.getValue()});
+        }
+        
+        if(pq.size() >=2) {
+            int f = pq.poll()[1];
+            int s = pq.poll()[1];
+            answer = f * s;
+        }
+        
+        return answer;
     }
-}    
+    
+    public void union(int a, int b) {
+        int aP = find(a);
+        int bP = find(b);
+        
+        if(aP < bP) {
+            parent[b] = parent[a];
+        }else {
+            parent[a] = parent[b];
+        }
+    }
+    
+    public int find(int a) {
+        if(parent[a] == a) {
+           return a; 
+        }
+        
+        return parent[a] = find(parent[a]);
+    }
+}
