@@ -1,45 +1,50 @@
 import java.util.*;
 class Solution {
-    int answer;
+    int answer = 0;
     Set<Integer> set = new HashSet<>();
-    public int solution(String numbers) {
-        answer = 0;
-        boolean[] visited = new boolean[numbers.length()];
+    char c[];
+    boolean[] visited;
+    public int solution(String numbers) {     
         
-        DFS("", visited, numbers, 0);
-        
-        for(int t : set) {
-            if(isPrime(t)) {
+        c = numbers.toCharArray();
+        visited = new boolean[numbers.length()];
+        // 경우의 수 만들기 DFS      
+        DFS("", 0);
+
+        for(int value : set) {
+            if(isPrime(value)) {
                 answer++;
             }
         }
+        
         return answer;
     }
     
-    public void DFS(String start, boolean[] visited, String numbers, int cnt) {
-        if(cnt == numbers.length()) {
+    public void DFS(String start, int cnt) {
+        if(cnt == c.length) {
             return;
         }
         
-        for(int i=0; i<numbers.length(); i++) {
+        for(int i=0; i<c.length; i++) {
             if(visited[i]) {
                 continue;
             }
+            
             visited[i] = true;
-            String s = start + numbers.charAt(i);
-            set.add(Integer.parseInt(s));
-            DFS(s, visited, numbers, cnt+1);
+            String next = start + String.valueOf(c[i]);
+            set.add(Integer.parseInt(next));
+            DFS(next, cnt+1);
             visited[i] = false;
-        }          
+        }
     }
     
-    public boolean isPrime(int t) {       
-        if(t<=1) {
+    public boolean isPrime(int num) {
+        if(num == 0 || num == 1) {
             return false;
         }
-               
-        for(int i=2; i<=t/2; i++) {
-            if(t%i == 0) {
+            
+        for(int i=2; i<=Math.sqrt(num); i++) {
+            if(num % i == 0) {
                 return false;
             }
         }
