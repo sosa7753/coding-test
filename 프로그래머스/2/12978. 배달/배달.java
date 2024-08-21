@@ -39,7 +39,11 @@ class Solution {
         while(!pq.isEmpty()) {
             Node node = pq.poll();
             
-            // visited[node.to] = true;
+            if(visited[node.to]) {
+                continue;
+            }
+            
+            visited[node.to] = true;
             for(int i=0; i<list.get(node.to).size(); i++) {
                 Node next = list.get(node.to).get(i);
                 
