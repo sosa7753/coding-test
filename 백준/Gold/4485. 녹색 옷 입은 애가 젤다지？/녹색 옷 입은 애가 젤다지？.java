@@ -26,8 +26,11 @@ class Main {
                 }
             }
             
-            System.out.println("Problem " + cnt + ": " + DP(map));
-        }              
+            bw.write("Problem " + cnt + ": " + DP(map) + "\n");
+        }     
+        
+        bw.flush();
+        bw.close();
     }
     
     public static int DP(int[][] map) {
