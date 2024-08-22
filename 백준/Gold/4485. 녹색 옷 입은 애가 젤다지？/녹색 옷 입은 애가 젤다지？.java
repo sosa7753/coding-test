@@ -36,7 +36,7 @@ class Main {
     public static int DP(int[][] map) {
         int len = map.length;
         
-        boolean[][] visited = new boolean[len][len];
+        //boolean[][] visited = new boolean[len][len];
         int[][] dist = new int[len][len];
         for(int i=0; i<len; i++) {
             Arrays.fill(dist[i], Integer.MAX_VALUE);
@@ -49,11 +49,11 @@ class Main {
         while(!pq.isEmpty()) {
             int[] now = pq.poll();
             
-            if(visited[now[0]][now[1]]) {
-                continue;
-            }
+            //if(visited[now[0]][now[1]]) {
+            //    continue;
+            //}
             
-            visited[now[0]][now[1]] = true;
+            //visited[now[0]][now[1]] = true;
             
             for(int i=0; i<4; i++) {
                 int row = now[0] + dr[i];
