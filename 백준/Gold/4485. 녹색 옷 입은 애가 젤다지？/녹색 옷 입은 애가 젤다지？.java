@@ -36,17 +36,24 @@ class Main {
     public static int DP(int[][] map) {
         int len = map.length;
         
+        boolean[][] visited = new boolean[len][len];
         int[][] dist = new int[len][len];
         for(int i=0; i<len; i++) {
             Arrays.fill(dist[i], Integer.MAX_VALUE);
         }
         
-        Queue<int[]> queue = new LinkedList<>();
-        queue.offer(new int[] {0,0});
+        PriorityQueue<int[]> pq = new PriorityQueue<>((x,y) -> (x[2] - y[2]));
+        pq.offer(new int[] {0,0, map[0][0]});
         dist[0][0] = map[0][0]; 
           
-        while(!queue.isEmpty()) {
-            int[] now = queue.poll();
+        while(!pq.isEmpty()) {
+            int[] now = pq.poll();
+            
+            if(visited[now[0]][now[1]]) {
+                continue;
+            }
+            
+            visited[now[0]][now[1]] = true;
             
             for(int i=0; i<4; i++) {
                 int row = now[0] + dr[i];
@@ -58,7 +65,7 @@ class Main {
                               
                 if(dist[row][col] > dist[now[0]][now[1]] + map[row][col]) {
                     dist[row][col] = dist[now[0]][now[1]] + map[row][col];              
-                    queue.offer(new int[] {row, col});
+                    pq.offer(new int[] {row, col, dist[row][col]});
                 }                                                    
             }
         }
