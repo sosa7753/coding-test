@@ -61,8 +61,8 @@ class Main {
     }
     
     public static int DFS(int r, int c, int cnt) {
-        if(cnt == 4) {
-            return 0;
+        if(cnt == 3) {
+            return map[r][c];
         }
 
         int result = 0;
