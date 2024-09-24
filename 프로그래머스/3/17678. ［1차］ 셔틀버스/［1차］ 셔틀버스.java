@@ -1,47 +1,33 @@
 import java.util.*;
 class Solution {
     public String solution(int n, int t, int m, String[] timetable) {
-        List<List<Integer>> bus = new ArrayList<>(); // 버스 간격
-        for(int i=0; i<n; i++) {
-            bus.add(new ArrayList<>());
-        }
+        PriorityQueue<Integer> pq = new PriorityQueue<>();
         
         int start = time("09:00");            
-        int value = 0;
-        int[] arrive = new int[timetable.length];
         for(int i=0; i<timetable.length; i++) {
-            arrive[i] = time(timetable[i]);
+            pq.offer(time(timetable[i]));
         }
-        Arrays.sort(arrive);
         
-        int p = 0;
-        for(int i=0; i<bus.size(); i++) {
+        int cnt = 0;
+        int last = pq.peek();
+        int lastBus = start + (n-1) * t;
+        for(int i=0; i<n; i++) {
             int now = start + i * t; // 버스 시간
-            int cnt = 0;
-            while(p <= arrive.length-1 && arrive[p] <= now && cnt < m) {
-                bus.get(i).add(arrive[p]);
-                cnt++;
-                p++;
-            }
-        } 
-        
-        for(int i=bus.size()-1; i>=0; i--) { // 막차부터 연산
-            int cur = start + i * t;
-            List<Integer> list = bus.get(i);
+            cnt = 0;
             
-            if(list.size() < m) {
-                return clock(cur);
-            }else {
-                if(list.get(0) == list.get(list.size()-1)) { // 모든 값이 같음.
-                    if(i==0 || list.get(0) !=cur) {
-                        return clock(list.get(0)-1);
-                    }                 
-                }else {
-                    return clock(list.get(list.size()-1) -1);
+            while(!pq.isEmpty()) {
+                if(now < pq.peek() || cnt >= m) {
+                    break;
                 }
-            }
+                last = pq.poll();
+                cnt++;               
+            }    
         }
-        return clock(Math.max(0, arrive[0] - 1));
+        
+        if(cnt < m) {
+            return clock(lastBus);
+        }
+        return clock(last - 1);
     }
        
     public int time(String str) {
