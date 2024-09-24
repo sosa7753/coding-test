@@ -6,8 +6,7 @@ class Solution {
             bus.add(new ArrayList<>());
         }
         
-        int start = time("09:00");
-            
+        int start = time("09:00");            
         int value = 0;
         int[] arrive = new int[timetable.length];
         for(int i=0; i<timetable.length; i++) {
@@ -26,7 +25,7 @@ class Solution {
             }
         } 
         
-        for(int i=bus.size()-1; i>=1; i--) { // 막차부터 연산
+        for(int i=bus.size()-1; i>=0; i--) { // 막차부터 연산
             int cur = start + i * t;
             List<Integer> list = bus.get(i);
             
@@ -34,28 +33,15 @@ class Solution {
                 return clock(cur);
             }else {
                 if(list.get(0) == list.get(list.size()-1)) { // 모든 값이 같음.
-                    if(list.get(0) == cur) {
-                        continue;
-                    }else {
+                    if(i==0 || list.get(0) !=cur) {
                         return clock(list.get(0)-1);
-                    }
+                    }                 
                 }else {
                     return clock(list.get(list.size()-1) -1);
                 }
             }
         }
-        
-        List<Integer> last = bus.get(0);
-        
-        if(last.size() < m) {
-                return clock(start);
-        }else {
-                if(last.get(0) == last.get(last.size()-1)) { // 모든 값이 같음.
-                    return clock(last.get(0) - 1);
-                }else {
-                    return clock(last.get(last.size()-1) -1);
-                }
-        }
+        return clock(Math.max(0, arrive[0] - 1));
     }
        
     public int time(String str) {
