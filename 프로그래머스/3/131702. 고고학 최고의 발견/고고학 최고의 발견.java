@@ -4,10 +4,8 @@ class Solution {
     int[] arr; // 방향 배열
     int answer = Integer.MAX_VALUE;
     public int solution(int[][] clockHands) {        
-        arr = new int[clockHands[0].length];
-        
-        DFS(0, clockHands);
-        
+        arr = new int[clockHands[0].length];        
+        DFS(0, clockHands);      
         return answer;
     }
     
@@ -32,18 +30,10 @@ class Solution {
        for(int i=0; i<clockHands.length; i++) {
            map[i] = clockHands[i].clone();
        } 
-               
-       // 0행에 대한 회전 
-       rotate(map, 0, arr);
-        
-       int[] next = new int[map[0].length];
-       for(int i=0; i<map[0].length; i++) {
-           next[i] = (4-map[0][i])%4;
-           sum += next[i];
-       }
-        
-       // 1행~ 대한 회전
-       for(int i=1; i<map.length; i++) {
+           
+       // 회전
+       int[] next = arr.clone();
+       for(int i=0; i<map.length; i++) {
            rotate(map, i, next);
            for(int j=0; j<map[i].length; j++) {
                next[j] = (4-map[i][j])%4; 
