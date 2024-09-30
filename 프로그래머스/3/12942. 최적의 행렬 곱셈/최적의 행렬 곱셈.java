@@ -3,8 +3,6 @@ class Solution {
     int[][] dp;
     int[][] matrix;
     public int solution(int[][] matrix_sizes) {
-        int answer = 0;
-        
         matrix = new int[matrix_sizes.length][matrix_sizes[0].length];
         for(int i=0; i<matrix_sizes.length; i++) {
             matrix[i] = matrix_sizes[i].clone();
