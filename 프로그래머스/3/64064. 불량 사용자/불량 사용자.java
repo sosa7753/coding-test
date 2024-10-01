@@ -16,15 +16,13 @@ class Solution {
     
     public void DFS(int cnt) {
         if(cnt == ban.length) {
-            if(set.size() == ban.length) {
-                StringBuilder sb = new StringBuilder();
-                for(int i=1; i<visited.length; i++) {
-                    if(visited[i]) {
-                        sb.append(i);
-                    }
-                }    
-                result.add(sb.toString());
-            }
+           StringBuilder sb = new StringBuilder();
+           for(int i=1; i<visited.length; i++) {
+               if(visited[i]) {
+                  sb.append(i);
+                  }
+            }    
+            result.add(sb.toString());
             return;
         }
         
