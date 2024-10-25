@@ -4,22 +4,12 @@ class Solution {
         int answer = 0;      
         root = new Node('0', 0);
         
-        // 트라이 구조일 때,
-        /**
-        for(N)
-        charAT(idx)
-        root[] -> a -> 자식이 1개면 depth를 리턴
-                    -> 자식이 2개면 다음 chatAt(idx++)을 찾아서 반복
-        만약 문자열 끝까지 도달했다면, 문자열 길이 리턴 
-        */
-        
         for(int i=0; i<words.length; i++) {
             addTrie(words[i]);
         } 
         
-        for(int i=0; i<words.length; i++) {
-            int value = find(words[i]);
-            answer += value;
+        for(int i=0; i<words.length; i++) {                     
+            answer += find(words[i]);
         }
          
         return answer;
