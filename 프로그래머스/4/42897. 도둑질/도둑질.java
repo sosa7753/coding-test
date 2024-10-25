@@ -1,27 +1,18 @@
 class Solution {
-   
     public int solution(int[] money) {
-        int answer = 0;
-        int[] dp =new int[money.length-1];
-        int[] dp2= new int[money.length];
+        int[][] dp = new int[2][money.length];
         
-        dp[0]=money[0];
-        dp[1]=money[0];
+        // 1은 첫집을 털음. 2는 안털음.
+        dp[1][0] = money[0];
+        dp[1][1] = money[0];
         
-        dp2[0]=0;
-        dp2[1]=money[1];
+        dp[0][0] = 0;
+        dp[0][1] = money[1];
         
-        //0번째 집을 터는 경우
-        for(int i=2;i<money.length-1;i++){
-            dp[i]=Math.max(dp[i-2]+money[i],dp[i-1]);
+        for(int i=2; i<dp[0].length; i++) {
+            dp[1][i] = Math.max(dp[1][i-1], dp[1][i-2] + money[i]);
+            dp[0][i] = Math.max(dp[0][i-1], dp[0][i-2] + money[i]);
         }
-        
-        //0번째 집을 털지 않는 경우, 즉, 마지막 집을 터는 경우
-        for(int i=2;i<money.length;i++){
-            dp2[i]=Math.max(dp2[i-2]+money[i],dp2[i-1]);
-        }
-         
-        return Math.max(dp[money.length-2],dp2[money.length-1]);
-    
+        return Math.max(dp[1][money.length-2], dp[0][money.length-1]);
     }
 }
