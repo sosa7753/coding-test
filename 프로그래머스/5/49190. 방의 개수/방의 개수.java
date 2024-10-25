@@ -5,10 +5,7 @@ class Solution {
     public int solution(int[] arrows) {
         int answer = 0;
         Map<String, Set<Integer>> map = new HashMap<>();
-        // 방이 생기는 조건 
-        // 1. 이미 방문한 정점인 것. 2. 새로 생긴 간선 
-        
-        // 교차점이 생기면 도형이 2개가 생기기 때문에 2배를 움직인다고 가정 -> 처음 움직일 때 교차점 도달시 1개, 교차점에서 끝 점 도달시 1개
+    
         int curX = 0;
         int curY = 0;
         String now = key(curX, curY);
