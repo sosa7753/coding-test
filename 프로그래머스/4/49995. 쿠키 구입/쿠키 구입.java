@@ -8,7 +8,6 @@ class Solution {
             S[i] = S[i-1] + cookie[i];
         }
         
-
         for(int i=0; i<S.length-1; i++) { // 시작
             for(int j=i+1; j<S.length; j++) { // 끝 
                 int check = 0;
