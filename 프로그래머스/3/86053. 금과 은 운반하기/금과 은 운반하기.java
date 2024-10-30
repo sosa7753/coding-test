@@ -13,7 +13,8 @@ class Solution {
                 long cnt = ((mid+(long)t[i])/(long)t[i])/2L; 
                 long k = Math.min((long)g[i], (long)(w[i])*cnt);
                 maxG += k; 
-                gs += k + Math.min((long)s[i], (long)(w[i])*cnt - k); 
+                // gs += k + Math.min((long)s[i], (long)(w[i])*cnt - k); 
+                gs += Math.min((long)(w[i])*cnt, (long)(g[i] + s[i]));
                 maxS += Math.min((long)s[i], (long)(w[i])*cnt);                
             }
             
