@@ -55,6 +55,9 @@ class Main {
     // 정답
     int result = 0;
     for(int i=0; i<arr.length; i++) {
+        if(depth[i] > depth[idxK]) {
+            break;
+        }
        // depth 같음. 부모가 다름. 부모의 부모가 같음.
       if(depth[i] == depth[idxK] && parent[i] != parent[idxK] && parent[parent[i]] == parent[parent[idxK]]) { 
         result++;
@@ -62,6 +65,4 @@ class Main {
     }
     return result;
   }
-    
-  
 }
