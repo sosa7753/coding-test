@@ -6,27 +6,27 @@ class Main {
     StringTokenizer st = new StringTokenizer(br.readLine());
 
     int N = Integer.parseInt(st.nextToken());
-    int K = Integer.parseInt(st.nextToken());
+    long K = Long.parseLong(st.nextToken());
 
     st = new StringTokenizer(br.readLine());
-    int[] arr = new int[N];
+    long[] arr = new long[N];
 
     for(int i=0; i<N; i++) {
-      arr[i] = Integer.parseInt(st.nextToken());
+      arr[i] = Long.parseLong(st.nextToken());
     }
 
-    int[] S = new int[N];
+    long[] S = new long[N];
     S[0] = arr[0];
     for(int i=1; i<arr.length; i++) {
       S[i] = S[i-1] + arr[i];
     }
 
-    int[] dp = new int[N];
+    long[] dp = new long[N];
 
     int p1 = 0;
     int p2 = 0;
     while(p1 <= p2 && p2 < arr.length) {
-      int sum = 0;
+      long sum = 0;
       if(p1 == 0) {
         sum = S[p2];
       }else {
@@ -37,19 +37,18 @@ class Main {
         if(p2 == 0) {
           dp[p2] = 0;
         }else {
-          if(p1 != 0) {
-            dp[p2] = Math.max(dp[p2], dp[p1 - 1]);
-          }
+          dp[p2] = Math.max(dp[p2], dp[p2 - 1]);
         }
         p2++;
       }else {
-        int pre = 0;
+        long pre = 0;
         if(p1 != 0) {
           pre = dp[p1-1];
         }
         dp[p2] = Math.max(dp[p2], pre + sum - K);
         if(p1 == p2) {
           p2++;
+          p1++;
         }else {
           p1++;
         }
