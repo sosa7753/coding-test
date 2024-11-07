@@ -1,31 +1,34 @@
+import java.util.*;
 class Solution {
     public int solution(int[] stones, int k) {
-        int L = 1;
-        int R = 200000000;
-        while(L <= R) {
-            int mid = (L + R)/2;
-            
-            if(check(stones, mid, k)) {
-                L = mid+1;
-            }else {
-                R = mid-1;
-            }
-        }
-        return R;
-    }
-    
-    public boolean check(int[] stones, int mid, int k) {
-        int cnt = 0;
+        int answer = Integer.MAX_VALUE;
+        
+        Deque<Node> dq = new LinkedList<>();
         for(int i=0; i<stones.length; i++) {
-            if(stones[i] < mid) {
-                cnt++;
-                if(cnt == k) {
-                    return false;
-                }
-            }else {
-                cnt = 0;
+            
+            while(!dq.isEmpty() && dq.getLast().value < stones[i]) {
+                dq.removeLast();
             }
-        }
-        return true;
+            dq.addLast(new Node(stones[i], i));
+            
+            if(dq.getFirst().idx <= i-k) {
+                dq.removeFirst();
+            }
+            
+            if(dq.getLast().idx >= k-1) {
+                 answer = Math.min(answer, dq.getFirst().value);
+            }           
+         }
+        
+        return answer;
+    }
+}
+
+class Node {
+    int value;
+    int idx;
+    Node(int value, int idx) {
+        this.value = value;
+        this.idx = idx;
     }
 }
