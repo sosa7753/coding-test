@@ -2,6 +2,7 @@ import java.util.*;
 import java.io.*;
 class Main {
     static int X;
+    static PriorityQueue<Integer> pq = new PriorityQueue<>();
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st = new StringTokenizer(br.readLine());
@@ -30,9 +31,7 @@ class Main {
         System.out.print(L);
     }
     
-    public static boolean check(int cnt, int[] arr) {
-        PriorityQueue<Integer> pq = new PriorityQueue<>();
-        
+    public static boolean check(int cnt, int[] arr) {    
         for(int i=0; i<arr.length; i++) {
             if(pq.isEmpty() || pq.size() < cnt) {
                 pq.offer(arr[i]);
