@@ -1,7 +1,6 @@
 import java.util.*;
 class Solution {
     boolean[][][] map;
-    int nl;
     PriorityQueue<int[]> pq = new PriorityQueue<>((x,y) -> {
         if(x[0] == y[0]) {
             if(x[1] == y[1]) {
@@ -16,7 +15,6 @@ class Solution {
        
     public int[][] solution(int n, int[][] build_frame) {
         map = new boolean[n+1][n+1][2]; // 0은 기둥 1은 보   
-        nl = n;
         for(int i=0; i<build_frame.length; i++) {
             int[] tmp = build_frame[i];
             int x = tmp[0];
