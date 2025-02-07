@@ -34,6 +34,7 @@ class Solution {
     }
     
     public String key(int x, int y) {
-        return String.format("%d, %d", x, y);
+        StringBuilder sb = new StringBuilder();
+        return sb.append(x).append(",").append(y).toString();
     }
 }
