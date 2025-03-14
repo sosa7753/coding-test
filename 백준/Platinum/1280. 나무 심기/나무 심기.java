@@ -1,58 +1,88 @@
-import java.io.*;
 import java.util.*;
+import java.io.*;
 class Main {
-	static final long MOD = 1000000007;
-	static final int END = 200000;
-	static int N;
-	static long[] arr;
-	static long[] tree;
-	static long[] cntTree;
-	public static void main(String[] args) {
-		Scanner sc = new Scanner(System.in);
-		N = sc.nextInt();
-		arr = new long[N];
-		tree = new long[END*4];
-		cntTree = new long[END*4];
-		
-		long ans = 1;
-		for(int i = 0; i < N; i++) {
-			long x = sc.nextLong();
-			long left = cntQuery(0,x-1,1,0,END)*x - query(0,x-1,1,0,END);
-			long right = query(x+1,END,1,0,END) - cntQuery(x+1,END,1,0,END)*x;
-			if(i!=0)
-				ans = (left+right)%MOD * ans%MOD;
-			update(x,x,1,0,END);
-			cntUpdate(x,1,1,0,END);
-		}
-		System.out.println(ans);
-		sc.close();
-	}
-	
-	static long query(long s, long e, int node, int ns, int ne) {
-		if(ne < s || ns > e) return 0;
-		if(s <= ns && ne <= e) return tree[node];
-		int mid = (ns+ne)/2;
-		return query(s,e,node*2,ns,mid)+query(s,e,node*2+1,mid+1,ne);
-	}
-	
-	static long cntQuery(long s, long e, int node, int ns, int ne) {
-		if(ne < s || ns > e) return 0;
-		if(s <= ns && ne <= e) return cntTree[node];
-		int mid = (ns+ne)/2;
-		return cntQuery(s,e,node*2,ns,mid)+cntQuery(s,e,node*2+1,mid+1,ne);
-	}
-	
-	static long update(long i, long val, int node, int s, int e) {
-		if(i < s || i > e) return tree[node];
-		if(s==e) return tree[node]+=val;
-		int mid= (s+e)/2;
-		return tree[node] = update(i,val,node*2,s,mid)+update(i,val,node*2+1,mid+1,e);
-	}
-	
-	static long cntUpdate(long i, long val, int node, int s, int e) {
-		if(i < s || i > e) return cntTree[node];
-		if(s==e) return cntTree[node]+=val;
-		int mid= (s+e)/2;
-		return cntTree[node] = cntUpdate(i,val,node*2,s,mid)+cntUpdate(i,val,node*2+1,mid+1,e);
-	}
+  static long INF = 1000000007L;
+  static int max = 200000;
+  static int N;
+  static long[] cnt;
+  static long[] sum;
+  static long answer = 1;
+  public static void main(String[] args) throws IOException {
+    BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+
+    N = Integer.parseInt(br.readLine());
+
+    cnt = new long[max*4];
+    sum = new long[max*4];
+
+    int first = Integer.parseInt(br.readLine());
+    cntUpdate(first, 1, 0, max);
+    sumUpdate(first, 1, 0, max);
+
+    for(int i=2; i<=N; i++) {
+      int value = Integer.parseInt(br.readLine());
+      long left = value * getCnt(1, 0, max, 0, value-1) - getSum(1, 0, max, 0, value-1);
+      long right = getSum(1, 0, max, value+1, max) - value * getCnt(1, 0, max, value+1, max);
+
+      answer = (answer * ((left + right) % INF))%INF;
+
+      cntUpdate(value, 1, 0, max);
+      sumUpdate(value, 1, 0, max);
+    }
+
+    System.out.print(answer);
+  }
+
+  // start, end 는 트리 관리 범위
+  public static long cntUpdate(int value, int idx, int start, int end) {
+    if(value < start || end < value) { // 아예 벗어난 범위
+      return cnt[idx];
+    }
+
+    if(start == end) {
+       return cnt[idx] = cnt[idx]+1;
+    }
+
+    int mid = (start + end)/2;
+    return cnt[idx] = cntUpdate(value, idx * 2, start, mid) + cntUpdate(value, idx * 2 + 1, mid+1, end);
+  }
+
+  public static long getCnt(int idx, int start, int end, int L, int R) {
+    if(R < start || end < L) {
+      return 0;
+    }
+
+    if(L<=start && end<=R) {
+      return cnt[idx];
+    }
+
+    int mid = (start + end)/2;
+    return getCnt(idx*2, start, mid, L, R) + getCnt(idx*2+1, mid+1, end, L, R);
+  }
+
+  public static long sumUpdate(int value, int idx, int start, int end) {
+    if (value < start || end < value) { // 아예 벗어난 범위
+      return sum[idx];
+    }
+
+    if (start == end) {
+      return sum[idx] += value;
+    }
+
+    int mid = (start + end) / 2;
+    return sum[idx] = sumUpdate(value, idx * 2, start, mid) + sumUpdate(value, idx * 2 + 1, mid + 1, end);
+  }
+
+  public static long getSum(int idx, int start, int end, int L, int R) {
+    if(R < start || end < L) {
+      return 0;
+    }
+
+    if(L<=start && end<=R) {
+      return sum[idx];
+    }
+
+    int mid = (start + end)/2;
+    return getSum(idx*2, start, mid, L, R) + getSum(idx*2+1, mid+1, end, L, R);
+  }
 }
