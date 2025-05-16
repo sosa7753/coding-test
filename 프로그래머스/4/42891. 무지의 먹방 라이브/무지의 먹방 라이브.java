@@ -1,13 +1,7 @@
 import java.util.*;
 class Solution {
     public int solution(int[] food_times, long k) {      
-        PriorityQueue<int[]> pq = new PriorityQueue<>((x,y) -> {
-            if(x[0] == y[0]) {
-                return x[1] - y[1];
-            }else {
-                return x[0] - y[0];
-            }
-        });
+        PriorityQueue<int[]> pq = new PriorityQueue<>((x,y) -> (x[0] - y[0]));
             
         for(int i=0; i<food_times.length; i++) {
             pq.add(new int[]{food_times[i], i+1});
@@ -28,14 +22,10 @@ class Solution {
             }
         }
         
-        if(cnt > 0) {
+        if(cnt > 0 || (cnt == 0 && pq.isEmpty())) {
             return -1;
         }
-        
-        if(cnt == 0 && pq.isEmpty()) {
-            return -1;
-        }
-        
+                
         int[] index = new int[backup.size() + pq.size()];
         int len = index.length;
         
@@ -45,13 +35,10 @@ class Solution {
         }
         
         while(!pq.isEmpty()) {
-            index[c++] = pq.poll()[1];
+            index[c++] = pq.poll()[1];   
         }
-        
         Arrays.sort(index);
-        
-        // System.out.print(Arrays.toString(index));
-                     
+
         int idx = (((int)cnt % len) + len)%len;
         return index[idx];
     }
