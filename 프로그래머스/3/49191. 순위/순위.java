@@ -7,15 +7,13 @@ class Solution {
             map[results[i][1]][results[i][0]] = -1;
         }
         
-        for(int i=1; i<=n; i++) { // 출발
-            for(int j=1; j<=n; j++) { // 도착
-                for(int k=1; k<=n; k++) {
+        for(int k=1; k<=n; k++) {
+            for(int i=1; i<=n; i++) {
+                for(int j=1; j<=n; j++) {
                     if(map[i][k] == 1 && map[k][j] == 1) {
-                        map[i][j] = 1; // 이기고 이기기
-                        map[j][i] = -1; // 반대쪽은 패배
-                    }
-                    
-                    if(map[i][k] == -1 && map[k][j] == -1) {
+                        map[i][j] = 1;
+                        map[j][i] = -1;
+                    }else if(map[i][k] == -1 && map[k][j] == -1) {
                         map[i][j] = -1;
                         map[j][i] = 1;
                     }
