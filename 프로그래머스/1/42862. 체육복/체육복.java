@@ -1,50 +1,32 @@
-// 모든 학생 수에서 못 받는 학생은 -- 
-// 같은 값은 미리 제거 
-// lost값을 만났다면 체크
-// 작은 값, 큰 값이 reserve에 있다. 작은값 사용 
-// 각각 하나씩 있다. 하나 사용 
-// 그 외 -- 
 import java.util.*;
 class Solution {
     public int solution(int n, int[] lost, int[] reserve) {
-        int answer = n;
-            
-        // reserve  저장 
-        List<Integer> r = new ArrayList<>();
-        for(int i=0; i<reserve.length; i++) {
-            r.add(reserve[i]);
+        int answer = 0;
+        
+        int[] ans = new int[n+2];
+        Arrays.fill(ans, 1);
+
+        for(int i=0; i<lost.length; i++) {
+            ans[lost[i]]--;
         }
         
-        // lost 저장
-        List<Integer> l = new ArrayList<>();
-        for(int i=0; i<lost.length; i++) {
-            if(r.contains(lost[i])) {
-                r.remove(Integer.valueOf(lost[i]));
+        for(int i=0; i<reserve.length; i++) {
+            ans[reserve[i]]++;
+        }
+        
+        for(int i=1; i<=n; i++) {
+            if(ans[i] >=1) {
+                answer++; 
                 continue;
             }
-            l.add(lost[i]);
-        }
-        
-        Collections.sort(r);
-        Collections.sort(l);
-        
-        // lost 순회 
-        for(int i=0; i<l.size(); i++) {
-            int target = l.get(i);
             
-            if(r.contains(target-1)) { // 작은 값
-                while(!r.isEmpty() && r.get(0) <= target - 1) {
-                    r.remove(0);
-                }
-            }else if(r.contains(target+1)) { // 큰 값
-                while(!r.isEmpty() && r.get(0) <= target + 1) {
-                    r.remove(0);
-                }
-            }else { // 양쪽이 없음.
-                answer--;
+            if(ans[i-1] == 2) {
+                answer++;
+            }else if(ans[i+1] == 2) {
+                answer++;
+                ans[i+1]--;
             }
         }
-        
         return answer;
     }
 }
