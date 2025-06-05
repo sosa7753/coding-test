@@ -1,13 +1,10 @@
-// 간선정보를 하나씩 끊기.
-// 끊은 연결리스트 가지고 DFS로 개수 세기 
-// 방문배열로 이미 방문한 적 있는 곳은 패스 
 import java.util.*;
 class Solution {
     List<List<Integer>> list = new ArrayList<>();
+    int answer = Integer.MAX_VALUE;
     boolean[] visited;
-    int min;
     public int solution(int n, int[][] wires) {
-        min = Integer.MAX_VALUE;
+        visited = new boolean[n+1];
         
         for(int i=0; i<=n; i++) {
             list.add(new ArrayList<>());
@@ -15,37 +12,45 @@ class Solution {
         
         for(int i=0; i<wires.length; i++) {
             list.get(wires[i][0]).add(wires[i][1]);
-            list.get(wires[i][1]).add(wires[i][0]);            
+            list.get(wires[i][1]).add(wires[i][0]);      
         }
         
-        // 하나씩 끊어서 DFS 돌리기 
         for(int i=0; i<wires.length; i++) {
-            list.get(wires[i][0]).remove(Integer.valueOf(wires[i][1]));
-            list.get(wires[i][1]).remove(Integer.valueOf(wires[i][0]));
-            
+            int s = wires[i][0];
+            int e = wires[i][1];
             visited = new boolean[n+1];
             
-            int cnt = DFS(1, visited);
-            min = Math.min(min,  Math.abs(cnt - (n - cnt)));
+            list.get(s).remove(Integer.valueOf(e));
+            list.get(e).remove(Integer.valueOf(s));
             
-            list.get(wires[i][0]).add(wires[i][1]);
-            list.get(wires[i][1]).add(wires[i][0]);
+            int cnt = BFS();
+            answer = Math.min(answer, Math.abs(cnt - (n - cnt)));
+            
+            list.get(s).add(e);
+            list.get(e).add(s);
         }
         
-        return min;
+        return answer;
     }
     
-    public int DFS(int start, boolean[] visited) {
-        visited[start] = true;
+    public int BFS() {
+        Queue<Integer> q = new LinkedList<>();
+        q.offer(1);
+        visited[1] = true;
         
-        int cnt = 1;
-        
-        for(int i=0; i<list.get(start).size(); i++) {
-            int next = list.get(start).get(i);
-            if(!visited[next]) {
-                cnt += DFS(next, visited);
+        int result = 1;
+        while(!q.isEmpty()) {
+            int now = q.poll();
+                          
+            for(int next : list.get(now)) {
+                if(visited[next]) {
+                    continue;
+                }
+                visited[next] = true;
+                result++;
+                q.offer(next);
             }
         }
-        return cnt;
+        return result;
     }
 }
