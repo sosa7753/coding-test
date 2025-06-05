@@ -1,36 +1,27 @@
 import java.util.*;
-import java.io.*;
-class Main {
+public class Main {
     static int N;
-    static int[] queen;
     static int answer = 0;
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
-        
         N = sc.nextInt();
-        queen = new int[N];
-        DFS(0);
-        System.out.print(answer);     
+        dfs(0, 0, 0, 0);
+        System.out.println(answer);
     }
-    
-    public static void DFS(int cnt) {
-        if(cnt == N) {
+
+    static void dfs(int row, int col, int ld, int rd) { // 현재 추가 행, 차지된 열, 좌하, 우하
+        if (row == N) {
             answer++;
             return;
         }
-        
-        for(int i=0; i<N; i++) {
-            boolean check = true;
-            for(int j=0; j<cnt; j++) {
-                if(Math.abs(i - queen[j]) == cnt - j || queen[j] == i) {
-                    check = false;
-                    break;
-                }               
-            }
-            if(check) {
-               queen[cnt] = i;        
-               DFS(cnt+1);  
-            }     
+
+        int available = ((1 << N) - 1) & ~(col | ld | rd);
+    
+        while (available != 0) {
+            int pos = available & -available; // 가장 오른쪽 1비트 추출
+            available -= pos; // 열에 추가 
+
+            dfs(row + 1, col | pos, (ld | pos) << 1, (rd | pos) >> 1); // 초기화
         }
     }
 }
