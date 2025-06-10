@@ -1,21 +1,27 @@
 class Solution {
     public int solution(int [][]board) {      
-        int answer = 0;
-       
-        if(board.length == 1 || board[0].length == 1) {
-            return 1;
-        }
-        for(int i=1; i < board.length; i++) {
-            for(int j=1; j<board[i].length; j++) {
-                if(board[i][j] != 0) {
-                   board[i][j] = Math.min(board[i-1][j-1],
-                                 Math.min(board[i][j-1], board[i-1][j])) + 1;
+        int n = board.length;
+        int m = board[0].length;
+        
+        int[][] dp = new int[n+1][m+1];
+        for(int i=1; i<=n; i++) {
+            for(int j=1; j<=m; j++) {
+                if(board[i-1][j-1] == 0) {
+                    continue;
                 }
-                if(answer < board[i][j]) {
-                    answer = board[i][j];
-                }
+                
+                dp[i][j] = Math.min(dp[i-1][j-1], 
+                                    Math.min(dp[i-1][j], dp[i][j-1])) + 1;
             }
         }
+        
+        int answer = 0;
+        for(int i=1; i<=n; i++) {
+            for(int j=1; j<=m; j++) {
+                answer = Math.max(answer, dp[i][j]);
+            }
+        }
+
         return answer * answer;
     }
 }
