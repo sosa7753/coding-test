@@ -1,5 +1,6 @@
 class Solution {
     public int solution(int [][]board) {      
+        int answer = 0;
         int n = board.length;
         int m = board[0].length;
         
@@ -12,15 +13,10 @@ class Solution {
                 
                 dp[i][j] = Math.min(dp[i-1][j-1], 
                                     Math.min(dp[i-1][j], dp[i][j-1])) + 1;
-            }
-        }
-        
-        int answer = 0;
-        for(int i=1; i<=n; i++) {
-            for(int j=1; j<=m; j++) {
+                
                 answer = Math.max(answer, dp[i][j]);
             }
-        }
+        }    
 
         return answer * answer;
     }
