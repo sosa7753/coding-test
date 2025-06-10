@@ -1,55 +1,51 @@
+import java.util.*;
 class Solution {
     public int[] solution(int target) {
-        int[] answer = new int[2];
+        int[] dart = new int[target+1]; // 최소 다트수
+        int[] dp = new int[target+1]; // 최대 싱글+불 수 
         
-        int[][] dp = new int[2][target+1]; // 0행은 다트 수 1행은 싱글or불 수 
+        Arrays.fill(dart, Integer.MAX_VALUE);
+        dart[0] = 0;
+        
         for(int i=1; i<=target; i++) {
-            dp[0][i] = Integer.MAX_VALUE;
-        }
-        
-        for(int i=0; i<=target; i++) {
-            for(int j=1; j<=20; j++) { // 불, x1, x2, x3        
-                // 불을 쏘는 경우
-                if(i >= 50) {
-                    if(dp[0][i] > dp[0][i-50] + 1) { // 더 적은값으로 다트를 쏨 
-                        dp[0][i] = dp[0][i-50] + 1;
-                        dp[1][i] = dp[1][i-50] + 1;
-                    }else if(dp[0][i] == dp[0][i-50] + 1) { // 같은 값으로 다트를 쏨
-                        dp[1][i] = Math.max(dp[1][i], dp[1][i-50] + 1);
-                    }
-                }
-                
-                // 싱글 
-                if(i >= j) {
-                    if(dp[0][i] > dp[0][i-j] + 1) {
-                        dp[0][i] = dp[0][i-j] + 1;
-                        dp[1][i] = dp[1][i-j] + 1;
-                    }else if(dp[0][i] == dp[0][i-j] + 1) {
-                        dp[1][i] = Math.max(dp[1][i], dp[1][i-j] + 1);                
-                    }
-                }
-                
-                // 더블 
-                if(i >= 2 * j) {
-                    if(dp[0][i] > dp[0][i-2*j] + 1) {
-                        dp[0][i] = dp[0][i-2*j] + 1;
-                        dp[1][i] = dp[1][i-2*j];
-                    }
-                }
-                
-                // 트리플 
-                if(i >= 3*j) {
-                    if(dp[0][i] > dp[0][i-3*j] + 1) {
-                        dp[0][i] = dp[0][i-3*j] + 1;
-                        dp[1][i] = dp[1][i-3*j];
-                    }
-                }
+            if(i >= 50) {
+                if(dart[i] > dart[i-50] + 1) {
+                    dart[i] = dart[i-50] + 1;
+                    dp[i] = dp[i-50] + 1;
+                }else if(dart[i] == dart[i-50] + 1) {
+                    dp[i] = Math.max(dp[i], dp[i-50] + 1);
+                }           
             }
+            
+            for(int j=1; j<=20; j++) {
+                if(i >= 3 * j) {
+                    if(dart[i] > dart[i-3*j] + 1) {
+                        dart[i] = dart[i-3*j] + 1;
+                        dp[i] = dp[i-3*j];
+                    }
+                }
+                
+                if(i >= 2 * j) {
+                    if(dart[i] > dart[i-2*j] + 1) {
+                        dart[i] = dart[i-2*j] + 1;
+                        dp[i] = dp[i-2*j];
+                    }
+                }
+                
+                if(i >= j) {
+                    if(dart[i] > dart[i-j] + 1) {
+                        dart[i] = dart[i-j] + 1;
+                        dp[i] = dp[i-j] + 1;
+                    }else if(dart[i] == dart[i-j] + 1) {
+                        dp[i] = Math.max(dp[i], dp[i-j] + 1);
+                    }
+                }
+            }    
         }
         
-        answer[0] = dp[0][target];
-        answer[1] = dp[1][target];
-        
+        int[] answer = new int[2];
+        answer[0] = dart[target];
+        answer[1] = dp[target];
         return answer;
     }
 }
