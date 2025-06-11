@@ -1,42 +1,47 @@
 import java.util.*;
 class Solution {
+    Set<Integer> set = new HashSet<>();
+    Map<Integer, Set<Integer>> map = new HashMap<>();
     public int solution(int N, int number) {
-        List<Set<Integer>> list = new ArrayList<>();
-        
-        for(int i=0; i<=8; i++) {
-            list.add(new HashSet<>());
-        }
-        list.get(1).add(N);
-        
-        for(int i=2; i<=8; i++) {
-            Set<Integer> set = list.get(i);
-            
-            // j번으로 만들 수 있는 Set 집합으로 i번째 집합을 만들기 
-            for(int j=1; j<=i; j++) {
-                Set<Integer> set1 = list.get(j);
-                Set<Integer> set2 = list.get(i-j);
-                
-                for(int num1 : set1) {
-                    for(int num2 : set2) {
-                        set.add(num1 + num2);
-                        set.add(num1 - num2);
-                        set.add(num1 * num2);
-                        if(num2 != 0) {
-                            set.add(num1 / num2);
-                        } 
-                    }
-                }
-                set.add(Integer.parseInt(String.valueOf(N).repeat(i)));
-            }       
-        }
-        
-        boolean check = false;
-        for(int i=1; i<9; i++) {
-            if(list.get(i).contains(number)) {
-                return i;
+        int answer = -1;
+                   
+        for(int i=1; i<=8; i++) {
+            set = updateSet(N, i);          
+            if(set.contains(number)) {
+                answer = i;
+                break;
             }
+            
         }
+        return answer;
+    }
+    
+    public Set updateSet(int N, int cnt) {
+        Set<Integer> next = new HashSet<>();
+        for(int i=1; i<=cnt/2; i++) {
+            Set<Integer> set1 = map.get(i);
+            Set<Integer> set2 = map.get(cnt-i);
+            
+            for(int s1 : set1) {
+                for(int s2 : set2) {
+                    next.add(s1 + s2);
+                    next.add(Math.abs(s1-s2));
+                    next.add(s1 * s2);
+                    if(s2 != 0) {
+                        next.add(s1 / s2);
+                    }
+                    
+                    if(s1 != 0) {
+                        next.add(s2 / s1);
+                    }                               
+                }
+            }   
+        }
+              
+        String str = String.valueOf(N).repeat(cnt);
+        next.add(Integer.parseInt(str)); 
         
-        return -1;
+        map.put(cnt, next);  
+        return next;
     }
 }
