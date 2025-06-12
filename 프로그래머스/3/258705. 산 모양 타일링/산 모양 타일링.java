@@ -1,28 +1,26 @@
 class Solution {
-    public int solution(int n, int[] tops) {
-        int INF = 10007;
-        int answer = 0;
+    int MOD = 10007;
+    public int solution(int n, int[] tops) {       
+        int[] ok = new int[n]; // 오른쪽 마름모를 사용 
+        int[] no = new int[n]; // 오른쪽 마름모를 사용 X 
         
-        int[] a = new int[n]; // 3번을 썼을 때
-        int[] b = new int[n]; // 3번을 안썼을 때 
-        
-        a[0] = 1;
+        ok[0] = 1;
         if(tops[0] == 1) {
-            b[0] = 3;
+            no[0] = 3;
         }else {
-            b[0] = 2;
+            no[0] = 2;
         }
         
-        for(int i=1; i<tops.length; i++) {
-            a[i] = a[i-1] + b[i-1];
+        for(int i=1; i<n; i++) {
+            ok[i] = ok[i-1] + no[i-1]; // 오른쪽 마름모를 쓰면 전부 가능
             
-            if(tops[i] == 1) {
-                b[i] = (a[i-1] * 2 + b[i-1] * 3) % INF;
+            if(tops[i] == 1) { 
+                no[i] = (no[i-1] * 3 + ok[i-1] * 2) % MOD; 
             }else {
-                b[i] = (a[i-1] + b[i-1] * 2) % INF;
+                no[i] = (no[i-1] * 2 + ok[i-1]) % MOD;
             }
         }
         
-        return (a[n-1] + b[n-1]) % 10007;
+        return (ok[n-1] + no[n-1]) % MOD;
     }
 }
