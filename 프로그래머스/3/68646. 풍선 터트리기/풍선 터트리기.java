@@ -1,15 +1,25 @@
-import java.util.*;
 class Solution {
     public int solution(int[] a) {
-        int L = Integer.MAX_VALUE;
-        int R = Integer.MAX_VALUE;
-        Set<Integer> set = new HashSet<>();
-        for(int i=0; i<a.length; i++) {
-            L = Math.min(L, a[i]);
-            R = Math.min(R, a[a.length-1-i]);
-            set.add(L);
-            set.add(R);
+        int answer = 1;
+        
+        int len = a.length;
+        
+        int[] R = new int[len];
+        R[len-1] = a[len-1];
+        
+        for(int i=len-2; i>=0; i--) {
+            R[i] = Math.min(R[i+1], a[i]);
         }
-        return set.size();
+        
+        int[] L = new int[len];
+        L[0] = a[0];
+        for(int i=1; i<len; i++) {
+            L[i] = Math.min(L[i-1], a[i]);
+            if(a[i] > R[i] && L[i] < a[i]) {
+                continue;
+            }
+            answer++;
+        }
+        return answer;
     }
 }
