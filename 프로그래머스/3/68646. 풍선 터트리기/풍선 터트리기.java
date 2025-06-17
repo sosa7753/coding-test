@@ -11,11 +11,10 @@ class Solution {
             R[i] = Math.min(R[i+1], a[i]);
         }
         
-        int[] L = new int[len];
-        L[0] = a[0];
+        int L = a[0];
         for(int i=1; i<len; i++) {
-            L[i] = Math.min(L[i-1], a[i]);
-            if(a[i] > R[i] && L[i] < a[i]) {
+            L = Math.min(L, a[i]);
+            if(a[i] > R[i] && L < a[i]) {
                 continue;
             }
             answer++;
