@@ -21,6 +21,8 @@ class Solution {
                 answer++;
             }
         }
+        
+        System.out.print(Arrays.toString(parents));
         return answer;
     }
     
@@ -39,6 +41,6 @@ class Solution {
         if(a == parents[a]) {
             return a;
         }
-        return find(parents[a]);
+        return parents[a] = find(parents[a]);
     }
 }
