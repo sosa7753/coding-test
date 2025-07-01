@@ -1,6 +1,6 @@
 import java.util.*;
 class Solution {
-    int MAX = 1000001;
+    int MAX = Integer.MAX_VALUE/2;
     public int solution(int temperature, int t1, int t2, int a, int b, int[] onboard) {
         
         t1 += 10; 
