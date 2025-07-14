@@ -1,62 +1,39 @@
 import java.util.*;
 class Solution {
-    int max;
     public int solution(int[] queue1, int[] queue2) {
-        int answer = 0;
-        max = Integer.MAX_VALUE;
         
-        int len = queue1.length;
+        Queue<Integer> q1 = new LinkedList<>();
+        Queue<Integer> q2 = new LinkedList<>();
         
-        long sum = 0;
-        long target = 0;
-        Queue<Integer> q1 = new LinkedList<>(); 
-        Queue<Integer> q2 = new LinkedList<>(); 
+        int n = queue1.length;
         
-        long sum1 = 0;
-        for(int value : queue1) {
-            q1.add(value);
-            sum += (long)value;
-            sum1 += (long)value;
+        long Q1 = 0;
+        long Q2 = 0;
+        for(int i=0; i<n; i++) {
+            Q1 += queue1[i];
+            q1.offer(queue1[i]);
+            
+            Q2 += queue2[i];
+            q2.offer(queue2[i]);
         }
-               
-        for(int value : queue2) {
-            q2.add(value);
-            sum += (long)value;
-        }
-                        
-        // 홀수 
-        if(sum%2 == 1) {
-            return -1;
-        }
-        
-        target = sum/2;
         
         int cnt = 0;
-        while(cnt < len*3) {
-            if(sum1 == target) {
-                max = Math.min(max, cnt);
+        while(cnt < 3 * n) {
+            if(Q1 == Q2) {
                 break;
+            }else if(Q1 > Q2) {
+                int tmp = q1.poll();
+                Q1 -= tmp;
+                Q2 += tmp;
+                q2.offer(tmp);
+            }else {
+                int tmp = q2.poll();
+                Q2 -= tmp;
+                Q1 += tmp;
+                q1.offer(tmp);
             }
-                        
-            if(sum1 > target || q2.isEmpty()) {
-                int now = q1.poll();
-                q2.add(now);
-                sum1 -= now;
-                cnt++;
-                continue;
-            }
-            
-            if(sum1 < target || q1.isEmpty()) {
-                int now = q2.poll();
-                q1.add(now);
-                sum1 += now;
-                cnt++; 
-            }          
+            cnt++;
         }
-        
-        if(cnt == len * 3) {
-            return -1;
-        }
-        return max;
+        return cnt == 3 * n ? -1 : cnt;
     }
 }
