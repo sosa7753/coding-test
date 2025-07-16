@@ -1,37 +1,35 @@
 import java.util.*;
 class Solution {
-    int[][] result;
-    int idx = 0;
-    public int[][] solution(int[][] nodeinfo) {      
-        Node[] nodes = new Node[nodeinfo.length];
-        
+    Node root;
+    PriorityQueue<Node> pq = new PriorityQueue<>((a,b) -> {
+        if(a.y == b.y) {
+            return a.x - b.x;
+        }else {
+            return b.y - a.y;
+        }
+    });
+    int cnt = 0;
+    int[][] answer;
+    public int[][] solution(int[][] nodeinfo) {
+        int n = nodeinfo.length;
+               
         for(int i=0; i<nodeinfo.length; i++) {
-            nodes[i] = new Node(i+1, nodeinfo[i][0], nodeinfo[i][1], null, null);     
+            pq.offer(new Node(i+1, nodeinfo[i][0], nodeinfo[i][1],
+                             null, null));
         }
         
-        Arrays.sort(nodes, new Comparator<Node>(){
-            public int compare(Node a, Node b) {
-                if(a.y == b.y) { // y값이 같다면 x가 작은 순 
-                    return a.x - b.x;
-                }else {
-                    return b.y - a.y; 
-                }
-            }
-        });
+        root = pq.poll();     
         
-        Node parent = nodes[0];
-        
-        for(int i=1; i<nodes.length; i++) {
-            makeTree(parent, nodes[i]);
+        while(!pq.isEmpty()) {
+           makeTree(root, pq.poll());            
         }
         
-        result = new int[2][nodeinfo.length];
+        answer = new int[2][n];    
+        preorder(root);
+        cnt = 0;
+        postorder(root);
         
-        preOrder(parent);
-        idx = 0;
-        postOrder(parent);
-                
-        return result;
+        return answer;
     }
     
     public void makeTree(Node parent, Node child) {
@@ -50,31 +48,31 @@ class Solution {
         }
     }
     
-    public void preOrder(Node head) {
-        if(head != null) {
-            result[0][idx++] = head.value;
-            preOrder(head.left);
-            preOrder(head.right);
+    public void preorder(Node node) {
+        if(node != null) {
+            answer[0][cnt++] = node.idx;
+            preorder(node.left);
+            preorder(node.right);
         }
     }
     
-    public void postOrder(Node head) {
-        if(head != null) {
-            postOrder(head.left);
-            postOrder(head.right);
-            result[1][idx++] = head.value;
+    public void postorder(Node node) {
+        if(node != null) {
+            postorder(node.left);
+            postorder(node.right);
+            answer[1][cnt++] = node.idx;
         }
     }
- }
+}
 
 class Node {
-    int value;
+    int idx;
     int x;
     int y;
     Node left;
     Node right;
-    Node(int value, int x, int y, Node left, Node right) {
-        this.value = value;
+    Node(int idx, int x, int y, Node left, Node right) {
+        this.idx = idx;
         this.x = x;
         this.y = y;
         this.left = left;
