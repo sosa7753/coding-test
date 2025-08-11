@@ -1,43 +1,44 @@
 import java.io.*;
 import java.util.*;
 public class Main {
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         String s = br.readLine().trim();
         int n = s.length();
-        char[] a = s.toCharArray();
+        char[] arr = s.toCharArray();
 
-        // pal[l][r] = s[l..r]가 팰린드롬인가?
         boolean[][] pal = new boolean[n][n];
 
-        // 중심 확장으로 팰린드롬 전처리 (O(n^2))
-        for (int center = 0; center < n; center++) {
-            // 홀수 길이
-            int l = center, r = center;
-            while (l >= 0 && r < n && a[l] == a[r]) {
-                pal[l][r] = true;
-                l--; r++;
-            }
-            // 짝수 길이
-            l = center; r = center + 1;
-            while (l >= 0 && r < n && a[l] == a[r]) {
-                pal[l][r] = true;
-                l--; r++;
+        // 길이가 1인 구간은 전부 팰린드롬
+        for (int i = 0; i < n; i++) {
+            pal[i][i] = true;
+        }
+
+        // 길이가 2인 구간
+        for (int i = 0; i < n - 1; i++) {
+            if (arr[i] == arr[i + 1]) {
+                pal[i][i + 1] = true;
             }
         }
 
-        // dp[i] = s[0..i] 최소 팰린드롬 분할 수
+        // 길이가 3 이상인 구간
+        for (int len = 3; len <= n; len++) { // 구간 길이
+            for (int start = 0; start + len - 1 < n; start++) {
+                int end = start + len - 1;
+                if (arr[start] == arr[end] && pal[start + 1][end - 1]) {
+                    pal[start][end] = true;
+                }
+            }
+        }
+
+        // 최소 분할 DP
         int[] dp = new int[n];
         Arrays.fill(dp, Integer.MAX_VALUE);
 
         for (int i = 0; i < n; i++) {
-            // j..i가 팰린드롬이면, 앞쪽은 dp[j-1] + 1
             for (int j = 0; j <= i; j++) {
                 if (pal[j][i]) {
-                    int prev = (j == 0) ? 0 : dp[j - 1];
-                    if (prev != Integer.MAX_VALUE) {
-                        dp[i] = Math.min(dp[i], prev + 1);
-                    }
+                    dp[i] = Math.min(dp[i], (j == 0 ? 0 : dp[j - 1]) + 1);
                 }
             }
         }
