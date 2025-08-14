@@ -1,29 +1,29 @@
 import java.util.*;
 class Solution {
     public String[] solution(String[] players, String[] callings) {
-        int p = players.length;
-        String[] answer = new String[p];
         
-        Map<String, Integer> map = new HashMap<>();
-        for(int i=0; i<p; i++) {
-            answer[i] = players[i];
-            map.put(players[i], i);
+        // 바뀌는 값은 부른 사람/앞 사람 -> 내 등수 앞 사람을 알아야함 -> 배열
+        // 빠르게 내 등 수 찾기 Map
+        
+        int n = players.length;
+        
+        Map<String, Integer> map = new HashMap<>();            
+        for(int i=0; i<n; i++) {
+            map.put(players[i], i);  
         }
         
-        for(int i=0; i<callings.length; i++) {
-            int now = map.get(callings[i]);
+        for(String call : callings) {
+            int score = map.get(call);
+            String front = players[score-1];
+            // 배열 스왑
+            players[score] = front;
+            players[score-1] = call;
             
-            String who = answer[now-1];
-            
-            // map 순위 변경
-            map.put(callings[i], now -1);
-            map.put(who, now);
-            
-            // 배열 순위 변경
-            String n = callings[i];
-            answer[now] = who;
-            answer[now-1] = n;                
+            // Map 스왑
+            map.put(call, score-1);
+            map.put(front, score);
         }
-        return answer;
+        
+        return players;
     }
 }
