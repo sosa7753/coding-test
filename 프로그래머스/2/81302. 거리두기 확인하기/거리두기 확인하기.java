@@ -1,86 +1,70 @@
 import java.util.*;
 class Solution {
-    int[] dx = {0,1,0,-1};
-    int[] dy = {-1,0,1,0};
-    boolean isfalse;
+    int[] dr = {-1, 0, 1, 0};
+    int[] dc = {0, 1, 0, -1};
     public int[] solution(String[][] places) {
-        int[] answer = new int[places.length];
-        isfalse = true;
-        int idx = 0;
+        int[] answer = new int[5];
         
-        for(int i=0; i<places.length; i++) {
-            int cnt = 1;
-            List<int[]> list = location(places[i]);
-            
-            while(!list.isEmpty()) {
-                int[] now = list.remove(0);
-                boolean[][] visited = new boolean[5][5];
+        for(int i=0; i<5; i++) {
+            boolean check = true;
+            for(int j=0; j<5; j++) {
+                for(int k=0; k<5; k++) {
+                    if(places[i][j].charAt(k) == 'P') {
+                        if(!BFS(places[i], j, k)) {
+                            check =false;
+                            break;
+                        }
+                    }
+                }
                 
-                check(places[i], visited, now, now);
-                if(!isfalse) {
-                    cnt = 0;
-                    isfalse = true;
+                if(!check) {
                     break;
                 }
             }
-            answer[idx++] = cnt;    
+            
+            if(check) {
+                answer[i] = 1;
+            }
         }
-        
         return answer;
     }
     
-    // 잘 지켰는지 체크, 잘 지켰으면 T 
-    public List<int[]> location(String[] places) {
+    public boolean BFS(String[] place, int r, int c) {
+        boolean[][] visited = new boolean[5][5];
+        Queue<int[]> q = new LinkedList<>();
+        q.offer(new int[] {r,c, 0});
+        visited[r][c] = true;
         
-        List<int[]> list = new ArrayList<>();
-        
-        // P위치 찾기 
-        for(int i=0; i<5; i++) {
-            for(int j=0; j<5; j++) {
-                if(places[i].charAt(j) == 'P') {
-                    list.add(new int[] {i, j});
+        while(!q.isEmpty()) {
+            int[] now = q.poll();
+            int row = now[0];
+            int col = now[1];
+            int cnt = now[2];
+            
+            if(cnt >= 2) {
+                continue;
+            }
+            
+            for(int i=0; i<4; i++) {
+                int nr = row + dr[i];
+                int nc = col + dc[i];
+                
+                if(nr < 0 || nr > 4 || nc < 0 || nc > 4) {
+                    continue;
+                }       
+                
+                if(visited[nr][nc]) {
+                    continue;
                 }
+                
+                visited[nr][nc] = true;
+                if(place[nr].charAt(nc) == 'P') {
+                    return false;
+                }else if(place[nr].charAt(nc) =='O') {
+                    q.add(new int[]{nr, nc, cnt+1});
+                }          
             }
-        }    
-        return list;
-    }
-    
-    // 개별 P에 대해 체크 
-    public void check(String[] place, boolean[][] visited, 
-                         int[] node, int[] start) {
-        int dis = Math.abs(start[0] - node[0]) + Math.abs(start[1] - node[1]);
-        if(dis > 2) {
-           return;
         }
-        visited[node[0]][node[1]] = true;
-                    
-        for(int i=0; i<4; i++) {
-            int row = node[0] + dy[i];
-            int col = node[1] + dx[i];
-            
-            if(row < 0 || row > 4 || col < 0 || col > 4) {
-                continue;
-            }
-            
-            if(visited[row][col]) {
-                continue;
-            }
-            
-            if(place[row].charAt(col) == 'X') {
-                continue;
-            }
-            visited[row][col] = true;
-            
-            if(place[row].charAt(col) == 'P') {
-               int len = Math.abs(start[0] - row) + Math.abs(start[1] - col);
-               if(len <=2) {
-                   isfalse = false;
-               }          
-               return;
-            }
-            
-            int[] tmp = {row, col};
-            check(place, visited, tmp, start);
-        }
+        return true;
     }
 }
