@@ -1,42 +1,44 @@
 import java.util.*;
 class Solution {
-    String[] value = {"R", "T", "C", "F", "J", "M", "A", "N"};
-    public String solution(String[] survey, int[] choices) {
-        
-        int n = survey.length;
-        
-        Map<String, Integer> map = new HashMap<>();
-        
-        // 초기 값 0 저장 
-        for(String str : value) {
-            map.put(str, 0);
-        }
-        // 질문
-        for(int i=0; i<n; i++) {
-            String[] str = survey[i].split("");
-            
-            if(choices[i] < 4) {
-                // 비동의 -> (4 - 값)이 점수 
-                map.put(str[0], map.get(str[0]) + 4 - choices[i]); 
-            }else if(choices[i] > 4) {
-                // 동의 -> (값 - 4)이 점수 
-                map.put(str[1], map.get(str[1]) + choices[i] - 4);
-            }else {
-                continue;
-            }
+    Map<Character, Integer> map = new HashMap<>();
+    char[] left = {'R', 'C', 'J', 'A'};
+    char[] right = {'T', 'F', 'M', 'N'};
+    public String solution(String[] survey, int[] choices) {  
+        init();
+        for(int i=0; i<survey.length; i++) {
+            char l = survey[i].charAt(0);
+            char r = survey[i].charAt(1);
+            cal(l, r, choices[i]);
         }
         
         StringBuilder sb = new StringBuilder();
-        
-        for(int i=0; i<value.length; i = i+2) {
-            if(map.get(value[i]) >= map.get(value[i+1])) {
-                sb.append(value[i]);
+        for(int i=0; i<4; i++) {
+            if(map.get(left[i]) >= map.get(right[i])) {
+                sb.append(left[i]);
             }else {
-                sb.append(value[i+1]);
+                sb.append(right[i]);
             }
         }
+    
+        return sb.toString();
+    }
+    
+    public void cal(char l, char r, int choice) {
+        if(choice == 4) {
+            return;
+        }
         
-        String answer = sb.toString();
-        return answer;
+        if(1 <= choice && choice <= 3) {
+           map.put(l, map.get(l) + 4-choice);
+        }else {
+           map.put(r, map.get(r) + choice - 4);
+        }
+    }
+    
+    public void init() {
+        for(int i=0; i<4; i++) {
+            map.put(left[i], 0);
+            map.put(right[i], 0);
+        }
     }
 }
