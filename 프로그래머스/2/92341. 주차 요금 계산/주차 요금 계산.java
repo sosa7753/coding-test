@@ -1,86 +1,69 @@
 import java.util.*;
 class Solution {
     public int[] solution(int[] fees, String[] records) {
-        PriorityQueue<Car> pq = new PriorityQueue<>((x,y) -> {
-            if(Integer.parseInt(x.number) > Integer.parseInt(y.number)) {
-                return 1;
-            }else {
-                return -1;
-            }
-        });
-               
-        Map<String, Integer> inMap = new HashMap<>(); // 차번호 - 입차시간
-        Map<String, Integer> cashMap = new HashMap<>(); // 차번호 - 누적시간
+        // 누적 시간을 계산할 맵
+        Map<String, Integer> remain = new HashMap<>();
+        // 입차 중인 차량 맵 --> 23:59 에서 빼줘야함
+        Map<String, Integer> in = new HashMap<>();
         
         for(int i=0; i<records.length; i++) {
-            String[] str = records[i].split(" ");
+            String[] s = records[i].split(" ");
+            int c = time(s[0]);
+            String car = s[1];
+            String type = s[2];
             
-            // 입차
-            if("IN".equals(str[2])) {
-                inMap.put(str[1], time(str[0]));
+            if("IN".equals(type)) {
+                in.put(car, c);
                 continue;
-            }
+            }            
             
-            // 출차
-            if("OUT".equals(str[2])) {
-                int in = inMap.get(str[1]); // 최근 입차 시간 
-                int out = time(str[0]);
-                              
-                cashMap.put(str[1], cashMap.getOrDefault(str[1], 0) + out-in);
-                inMap.remove(str[1]);
-            }
+            if("OUT".equals(type)) {
+                int plus = c - in.get(car);
+                remain.compute(car, (key, value) -> value == null ? plus : value + plus);
+                in.remove(car);
+            }       
         }
         
-        // 아직 출차를 안한 차 계산 
-        for(Map.Entry<String, Integer> entry : inMap.entrySet()) {
-            int in = entry.getValue();
-            int out = time("23:59");
-            
-            cashMap.put(entry.getKey(), 
-                        cashMap.getOrDefault(entry.getKey(), 0) + out-in);
+        int max = time("23:59");
+        for(Map.Entry<String, Integer> entry : in.entrySet()) {
+            int plus = max - entry.getValue();
+            remain.compute(entry.getKey(), (key, value) -> value == null ? plus : value + plus);
         }
         
-        
-        for(Map.Entry<String, Integer> entry : cashMap.entrySet()) {
-            pq.add(new Car(entry.getKey(), cash(fees, entry.getValue())));
+        // 누적 시간 순회해서 계산하기    
+        // (X의 누적시간 - 기본시간) / 단위 시간 (올림) *요금
+        PriorityQueue<Node> pq = new PriorityQueue<>((x,y) -> 
+            (Integer.parseInt(x.name) - Integer.parseInt(y.name)));
+                                                     
+        for(Map.Entry<String, Integer> entry : remain.entrySet()) {
+            pq.offer(new Node(entry.getKey(), entry.getValue()));
         }
-        
-        int[] answer = new int[cashMap.size()];
+                 
+        int[] answer = new int[pq.size()];
         int idx = 0;
         while(!pq.isEmpty()) {
-            Car car = pq.poll();
-            answer[idx++] = car.cash;
-        }
-        
+            int val = pq.poll().val;
+            if(fees[0] >= val) {
+                answer[idx++] = fees[1];
+            }else {
+                answer[idx++] = fees[1] + (int)Math.ceil(((double)val - fees[0])/fees[2]) * fees[3];
+            }     
+        }                                            
+
         return answer;
     }
     
-    // 시각을 시간으로 변환 
-    public int time(String str) {
-        String[] s = str.split(":");
-        
-        return Integer.parseInt(s[0]) * 60 + Integer.parseInt(s[1]);
-    }
-    
-    public int cash(int[] fees, int time) {
-                  
-        // 기본 시간보다 작음
-        if(time <= fees[0]) {
-            return fees[1];
-        }
-        
-        // 추가 요금 올림 처리
-        int add = ((time-fees[0] + fees[2] - 1)/fees[2]) * fees[3]; 
-        return add + fees[1];
+    public int time(String clock) {
+        String[] str = clock.split(":");
+        return Integer.parseInt(str[0])*60 + Integer.parseInt(str[1]);
     }
 }
 
-class Car {
-    String number;
-    int cash;
-    
-    Car(String number, int cash) {
-        this.number = number;
-        this.cash = cash;
+class Node {
+    String name;
+    int val;
+    Node(String name, int val) {
+        this.name = name;
+        this.val = val;
     }
 }
