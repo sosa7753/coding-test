@@ -1,25 +1,21 @@
 import java.util.*;
 class Solution {
-    int[] dist; 
     List<List<Integer>> list = new ArrayList<>();
     public int[] solution(int n, int[][] roads, int[] sources, int destination) {
-        int[] answer = new int[sources.length];
         
         for(int i=0; i<=n; i++) {
             list.add(new ArrayList<>());
         }
         
-        for(int i=0; i<roads.length; i++) {
-            list.get(roads[i][0]).add(roads[i][1]);
-            list.get(roads[i][1]).add(roads[i][0]);
+        for(int[] road : roads) {
+            list.get(road[0]).add(road[1]);
+            list.get(road[1]).add(road[0]);
         }
-        
-        dist = new int[n+1];
-        Arrays.fill(dist, Integer.MAX_VALUE);
-        
-        Dijkstra(destination);
-        
-        for(int i=0; i<sources.length; i++) {
+            
+        int[] dist = dijkstra(destination, n);
+        int len = sources.length;
+        int[] answer = new int[len];
+        for(int i=0; i<len; i++) {
             if(dist[sources[i]] == Integer.MAX_VALUE) {
                 answer[i] = -1;
             }else {
@@ -29,28 +25,35 @@ class Solution {
         return answer;
     }
     
-    public void Dijkstra(int destination) {
-        boolean[] visited = new boolean[dist.length];
-        PriorityQueue<int[]> pq = new PriorityQueue<>((x,y) -> (x[1] - y[1]));
-        pq.offer(new int[] {destination, 0});
-        dist[destination] = 0;
+    public int[] dijkstra(int s, int n) {
+        int[] dist = new int[n+1];
+        Arrays.fill(dist, Integer.MAX_VALUE);
+        dist[s] = 0;
+        
+        boolean[] visited = new boolean[n+1];
+        
+        PriorityQueue<int[]> pq = 
+            new PriorityQueue<>((x,y) -> (x[1] -y[1]));
+        
+        pq.offer(new int[]{s, 0});
         
         while(!pq.isEmpty()) {
             int[] now = pq.poll();
+            int to = now[0]; 
+            int w = now[1];
             
-            if(visited[now[0]]) {
+            if(visited[to]) {
                 continue;
             }
-            visited[now[0]] = true;
+            visited[to] = true;
             
-            for(int i=0; i<list.get(now[0]).size(); i++) {
-                int next = list.get(now[0]).get(i);
-                
-                if(dist[next] > now[1] + 1) {
-                    dist[next] = now[1] + 1;
-                    pq.offer(new int[] {next, dist[next]});
+            for(int next : list.get(to)) {
+                if(dist[next] > w + 1) {
+                    dist[next] = w + 1;
+                    pq.offer(new int[]{next, dist[next]});
                 }
             }
         }
+        return dist;
     }
 }
