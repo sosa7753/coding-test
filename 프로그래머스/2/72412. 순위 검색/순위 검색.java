@@ -2,48 +2,44 @@ import java.util.*;
 class Solution {
     Map<String, List<Integer>> map = new HashMap<>();
     public int[] solution(String[] info, String[] query) {
-        
-        for(String s : info) {
-            DFS("", s.split(" "), 0);
+        for(String in : info) {
+            DFS(in.split(" "), "", 0);
         }
         
-        for(List<Integer> l : map.values()) {
-            Collections.sort(l);
+        for(List<Integer> list : map.values()) {
+            Collections.sort(list);
         }
         
-        int[] answer = new int[query.length];
-        for(int i=0; i<query.length; i++) {
+        int n = query.length;
+        int[] answer = new int[n];
+        for(int i=0; i<n; i++) {
             String[] str = query[i].replace(" and ", "").split(" ");
-            int score = Integer.parseInt(str[1]);
-            answer[i] = binarysearch(str[0], score);
-        }   
+            int value = Integer.parseInt(str[1]);
+            answer[i] = binarysearch(value,  str[0]);
+        }
+        
         return answer;
     }
     
-    public void DFS(String now, String[] user, int cnt) {
+    public void DFS(String[] s, String now, int cnt) {
         if(cnt == 4) {
-            if(!map.containsKey(now)) {
-                List<Integer> list = new ArrayList<>();
-                list.add(Integer.parseInt(user[4]));
-                map.put(now, list);
-            }else {
-                map.get(now).add(Integer.parseInt(user[4]));
-            }
-            return;               
-        }    
+            map.computeIfAbsent(now, 
+                key -> new ArrayList<>()).add(Integer.parseInt(s[4]));
+            return;
+        }
         
-        DFS(now + "-", user, cnt+1);
-        DFS(now + user[cnt], user, cnt+1);
-    }  
+        DFS(s, now+"-", cnt+1);
+        DFS(s, now+s[cnt], cnt+1);
+    }
     
-    public int binarysearch(String query, int score) {
-        if(!map.containsKey(query)) {
+    public int binarysearch(int val, String str) {
+        if(!map.containsKey(str)) {
             return 0;
         }
-                 
-        List<Integer> list = map.get(query);
+        
+        List<Integer> list = map.get(str);
         int last = list.size()-1;
-        if(list.get(last) < score) {
+        if(list.get(last) < val) {
             return 0;
         }
         
@@ -52,13 +48,13 @@ class Solution {
         int result = 0;
         while(l<=r) {
             int mid = (l+r)/2;
-            if(list.get(mid) < score) {
-                l = mid+1;
+            if(list.get(mid) < val) {
+                l = mid + 1;
             }else {
-                r = mid-1;
+                r = mid - 1;
                 result = mid;
             }
         }
         return list.size() - result;
     }
-}  
+}
