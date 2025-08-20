@@ -1,66 +1,60 @@
 import java.util.*;
 class Solution {
     List<List<Node>> list = new ArrayList<>();
-    int[] dist;
-    boolean[] visited;
     public int solution(int N, int[][] road, int K) {
-        int answer = 0;
-        
-        dist = new int[N+1];
-        visited = new boolean[N+1];
-        
-        Arrays.fill(dist, Integer.MAX_VALUE);
         
         for(int i=0; i<=N; i++) {
             list.add(new ArrayList<>());
         }
         
-        for(int i=0; i<road.length; i++) {
-            list.get(road[i][0]).add(new Node(road[i][1], road[i][2]));
-            list.get(road[i][1]).add(new Node(road[i][0], road[i][2]));            
+        for(int[] r : road) {
+            list.get(r[0]).add(new Node(r[1], r[2]));
+            list.get(r[1]).add(new Node(r[0], r[2]));
         }
         
-        Dijkstra(N);
+        int[] dist = dijkstra(N); 
         
-        for(int i=1; i<=N; i++) {
+        int answer = 0;
+        for(int i=0; i<dist.length; i++) {
             if(dist[i] <= K) {
                 answer++;
             }
         }
-        
         return answer;
     }
     
-    public void Dijkstra(int N) {
-        PriorityQueue<Node> pq = new PriorityQueue<>((x,y) -> (x.weight - y.weight));
-        pq.offer(new Node(1, 0));
+    public int[] dijkstra(int N) {
+        int[] dist = new int[N+1];
+        Arrays.fill(dist, Integer.MAX_VALUE);
         dist[1] = 0;
+        boolean[] visited = new boolean[N+1];
+        
+        PriorityQueue<Node> pq = new PriorityQueue<>((x,y) -> (x.w - y.w));
+        pq.offer(new Node(1, 0));
         
         while(!pq.isEmpty()) {
-            Node node = pq.poll();
-            
-            if(visited[node.to]) {
+            Node now = pq.poll();
+            if(visited[now.to]) {
                 continue;
             }
+            visited[now.to] = true;
             
-            visited[node.to] = true;
-            for(int i=0; i<list.get(node.to).size(); i++) {
-                Node next = list.get(node.to).get(i);
-                
-                if(dist[next.to] > node.weight + next.weight) {
-                    dist[next.to] = node.weight + next.weight;
+            for(Node next : list.get(now.to)) {
+                if(dist[next.to] > now.w + next.w) {
+                    dist[next.to] = now.w + next.w;
                     pq.offer(new Node(next.to, dist[next.to]));
                 }
             }
-        }      
+        }
+        return dist;
     }
 }
 
 class Node {
     int to;
-    int weight;
-    Node (int to, int weight) {
+    int w;
+    Node(int to, int w) {
         this.to = to;
-        this.weight = weight;
+        this.w = w;
     }
 }
