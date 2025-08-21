@@ -1,58 +1,44 @@
 import java.util.*;
-// 큐에 모든 차를 넣고 시작
-// 다리는 2 칸임.
-// 큐에서 하나를 꺼내서 현재 남은 무게와 비교 10 > 7
-// time++ 
-// 다시 꺼냄, 6 ->  6 >3 이므로 패스 
-// time++
-// 
 class Solution {
-    public int solution(int bridge_length, int weight, int[] truck_weights) {        
-        // 건너야 하는 트럭 저장.
-        Queue<Integer> truck = new LinkedList<>();
-        for(int t : truck_weights) {
-            truck.offer(t);
-        }
+    public int solution(int bridge_length, int weight, int[] truck_weights) {
         
-        // 지나고 있는 다리 트럭
-        Queue<int[]> bridge = new LinkedList<>();
+        // 비어있으면, 트럭 올리기
+        // 트럭은 들어간 시점부터 길이 초만큼 존재
+        // 무게가 초과하면, 대기해야함. 
+        // 매초마다 트럭 빼기
         
-        int time = 1;
-        int leave = weight; // 견딜 수 있는 무게 
-        while(!truck.isEmpty()) {
-            // 다리에서 나갈 수 있는 트럭은 빼주기 
-            if(!bridge.isEmpty()) {
-                int[] out = bridge.peek();
-                if(time - out[1] == bridge_length) {
-                    bridge.poll();
-                    leave += out[0];
-                }
+        Queue<int[]> q = new LinkedList<>();
+        int w = 0;
+        int time = 0;
+        for(int i=0; i<truck_weights.length; i++) {
+            if(q.isEmpty()) { // 버이 있을 때
+                q.offer(new int[]{truck_weights[i], time});
+                w += truck_weights[i];
+                time++;
+                continue;
             }
             
-            int t = truck.peek();
+            if(time - q.peek()[1] == bridge_length) { // 하나씩 빼주기
+                int[] remove = q.poll();
+                w -= remove[0];
+            }
             
-            if(bridge.isEmpty()) { // 다리가 비어있으면 넣어 주기          
-                bridge.offer(new int[] {t,time});
-                leave -= t;
-                truck.poll();
+            if(w + truck_weights[i] <= weight) {
+                w += truck_weights[i];
+                q.offer(new int[]{truck_weights[i], time});
             }else {
-                if(leave >= t) { // 다음 트럭이 건널 수 있다면 
-                    leave -=t;
-                    bridge.offer(new int[] {t, time});
-                    truck.poll();
-                }
+                i--;        
             }
-            time++;
+            time++;      
         }
-        
-        while(!bridge.isEmpty()) {
-            int[] out = bridge.peek();
-            if(time - out[1] == bridge_length) {
-                bridge.poll();
+    
+        while(!q.isEmpty()) {
+            int[] now = q.poll();
+            
+            if(q.isEmpty()) {
+                time += bridge_length - (time - now[1]) + 1;
             }
-            time++;
         }
-        
-        return time - 1;
+        return time;
     }
 }
