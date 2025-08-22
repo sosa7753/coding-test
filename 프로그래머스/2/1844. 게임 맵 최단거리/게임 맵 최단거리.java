@@ -1,56 +1,53 @@
 import java.util.*;
 class Solution {
-    int[] dx = {0, 1, 0, -1};
-    int[] dy = {-1, 0, 1, 0};
-    int[][] board; 
-    boolean[][] visited;
+    int[] dr = {-1, 0, 1, 0};
+    int[] dc = {0, 1, 0, -1};
+    int n,m;
     public int solution(int[][] maps) {
-        int answer = 0;
+        n = maps.length;
+        m = maps[0].length;
         
-        board = new int[maps.length][maps[0].length];
-        visited = new boolean[maps.length][maps[0].length];
-                                           
-        BFS(visited, maps, board);
-             
-        if(board[maps.length-1][maps[0].length-1] == 0) {
-            return -1;
-        }                               
-        return board[maps.length-1][maps[0].length-1];
+        if(n == 1 && m == 1) {
+            return 0;
+        }
+            
+        return BFS(maps);
     }
     
-    public void BFS(boolean[][] visited, int[][] maps, int[][] board) {
+    public int BFS(int[][] maps) {
+        boolean[][] visited = new boolean[n][m];
+        Queue<int[]> q = new LinkedList<>();
+        q.offer(new int[]{0,0,1});
+        visited[0][0] = true;
         
-        Queue<int[]> queue = new LinkedList<>();
-        queue.offer(new int[] {0,0});
-        board[0][0] = 1;
-                
-        while(!queue.isEmpty()) {
-            int[] now = queue.poll();
+        while(!q.isEmpty()) {
+            int[] now = q.poll();
+            int r = now[0]; int c = now[1]; int w = now[2];
             
-            if(now[0] == maps.length-1 && now[1] == maps[0].length-1) {
-                return;
+            if(r == n-1 && c == m-1) {
+                return w;
             }
             
             for(int i=0; i<4; i++) {
-                int row = now[0] + dy[i];
-                int col = now[1] + dx[i];
+                int nr = r + dr[i];
+                int nc = c + dc[i];
                 
-                if(row < 0 || row > maps.length-1 || col < 0 || col > maps[0].length-1) {
+                if(nr < 0 || nr > n-1 || nc < 0 || nc > m-1) {
                     continue;
                 }
                 
-                if(visited[row][col]) {
+                if(maps[nr][nc] == 0) {
                     continue;
                 }
                 
-                if(maps[row][col] == 0) {
+                if(visited[nr][nc]) {
                     continue;
                 }
-                
-                visited[row][col] = true;                 
-                board[row][col] = board[now[0]][now[1]] + 1;
-                queue.offer(new int[] {row, col});                
+    
+                visited[nr][nc] = true;
+                q.offer(new int[]{nr, nc, w+1});
             }
         }
+        return -1;
     }
 }
