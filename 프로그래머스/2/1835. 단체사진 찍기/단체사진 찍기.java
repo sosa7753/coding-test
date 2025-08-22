@@ -1,81 +1,65 @@
-// DFS로 일렬로 서게 된 문자열 경우의 수를 가진다. 
-// 경우의 수 마다 만족하는지 계산한다. 
-
+import java.util.*;
 class Solution {
-    StringBuilder sb = new StringBuilder();
-    String[] friends = {"A", "C", "F", "J", "M", "N", "R", "T"};
+    char[] user = {'A', 'C', 'F', 'J', 'M', 'N', 'R', 'T'};
     boolean[] visited = new boolean[8];
-    int answer;
+    int answer = 0; 
     public int solution(int n, String[] data) {
-        answer = 0;
-             
-        DFS("", 0, data);
+        char[] arr = new char[8];
+        DFS(arr, data, 0);
+        
         return answer;
     }
     
-    public void DFS(String start, int idx, String[] data) {
-        if(idx == 8) {
-            if(check(start, data)) {
+    public void DFS(char[] arr, String[] data, int cnt) {
+        if(cnt == arr.length) {
+            if(check(arr, data)) {
                 answer++;
             }
             return;
         }
         
-        
-        sb.append(start);
-        for(int i=0; i<8; i++) {
+        for(int i=0; i<arr.length; i++) {
             if(visited[i]) {
                 continue;
             }
+ 
             visited[i] = true;
-            
-            sb.append(friends[i]);
-            DFS(sb.toString(), idx+1, data);
+            arr[cnt] = user[i];
+            DFS(arr, data, cnt + 1);
             visited[i] = false;
-            sb.setLength(start.length());
-        }          
+        }
     }
     
-    public boolean check(String line, String[] data) {       
-        boolean isfalse = true;
-        for(int i=0; i<data.length; i++) {
-            String str = data[i];
-            
-            char first = str.charAt(0);
-            char second = str.charAt(2);
-                       
-            int f = -1;
-            int s = -1;
-            for(int j=0; j<line.length(); j++) {
-                if(line.charAt(j) == first) {
-                    f = j;
-                }
-                
-                if(line.charAt(j) == second) {
-                    s = j;
-                }
-                
-                if(f != -1 && s != -1) {
-                    break;
-                }
-            }            
-            int gap = Math.abs(s-f) -1;
-            
-            char c = str.charAt(3);
-            int value = str.charAt(4) - '0';
-            if(c == '=' && value == gap) {
-                continue;
-            }
-            if(c == '<' && value > gap) {
-                continue;
-            }
-            if(c == '>' && value < gap) {
-                continue;
-            }
-            isfalse = false;
-            break;
+    public boolean check(char[] arr, String[] data) {    
+        Map<Character, Integer> map = new HashMap<>();
+        for(int i=0; i<arr.length; i++) {
+            map.put(arr[i], i);
         }
         
-        return isfalse;
+        boolean result = true;
+        for(String d : data) {
+            char[] c = d.toCharArray();
+            char f = c[0];
+            char s = c[2];
+            char o = c[3];
+            int in = c[4] - '0';
+            
+            int gap = Math.abs(map.get(f) - map.get(s)) - 1;
+            
+            if(o == '=' && gap == in) {
+               continue; 
+            }
+            
+            if(o == '<' && gap < in) {
+                continue;
+            }
+            
+            if(o == '>' && gap > in) {
+                continue;
+            }
+            result = false; 
+            break;
+        }
+        return result;
     }
 }
