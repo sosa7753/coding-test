@@ -1,82 +1,82 @@
-class Solution {    
+class Solution {
     int size = 0;
     int root = -1;
+    int n,k;
+    int[] num;
+    int[][] links;
     public int solution(int k, int[] num, int[][] links) {
-        int low = 0;
-        int high = 0;
+        this.k = k;
+        this.num = num;
+        this.links = links; 
         
-        for(int i=0; i<num.length; i++) {
-            low = Math.max(low, num[i]);
-            high += num[i];
-        }
-        
-        root = find(links, num);
-        
-        while(low <= high) {
-            int mid = high - (high - low)/2;
-            
-            if(check(num, links, mid) <= k) { // 가능하면 더 작은 값 찾기
-                high = mid -1;
-            }else {
-                low = mid + 1;
-            }
-        }
-        return low;
-    }
-    
-    public int find(int[][] links, int[] num) { // 루트 찾기 
-        boolean[] visited = new boolean[num.length];
-        
-        for(int i=0; i<links.length; i++) {
-            if(links[i][0] != -1) {
-                visited[links[i][0]] = true;
+        // root가 누군지 찾기 -> 누군가의 자식이면 visited = true로 찾기
+        // 명수를 이진탐색으로 돌려서 k개의 그룹으로 나눠지는지 체크
+        n = num.length;
+        boolean[] visited = new boolean[n];
+        for(int[] link : links) {
+            if(link[0] != -1) {
+                visited[link[0]] = true;
             }
             
-            if(links[i][1] != -1) {
-                visited[links[i][1]] = true;
+            if(link[1] != -1) {
+                visited[link[1]] = true;
             }
         }
         
-        for(int i=0; i<visited.length; i++) {
+        for(int i=0; i<n; i++) {
             if(!visited[i]) {
-                return i;
+                root = i;
+                break;
             }
         }
-        return -1;
+        
+        int l = 0;
+        int r = 0;
+        for(int number : num) {
+            l = Math.max(l, number);
+            r += number;
+        }
+        
+        int answer = 0;
+        while(l<=r) {
+            int mid = (l+r)/2;
+            if(check(mid) <= k) {
+                answer = mid;
+                r = mid - 1;
+            }else {
+                l = mid + 1;
+            }
+        }
+        
+        return answer;
     }
     
-    public int check(int[] num, int[][] links, int max) {
+    public int check(int val) {
         size = 0;
-        DFS(max, num, links, root);
-        return size+1;      
+        DFS(root, val);
+        return size + 1;
     }
     
-    public int DFS(int max, int[] num, int[][] links, int node) {
+    public int DFS(int node, int val) {
         int left = 0;
         int right = 0;
-        
-        // 왼쪽 자식이 있음. 
-        if(links[node][0] != -1) {
-            left = DFS(max, num, links, links[node][0]);
+        if(links[node][0] != -1)  {
+            left = DFS(links[node][0], val);
         }
         
-        // 오른쪽 자식이 있음. 
         if(links[node][1] != -1) {
-            right = DFS(max, num, links, links[node][1]);
+            right = DFS(links[node][1], val);
         }
-        
-        // 자기 자신 + left + right <= max면 자르지 말자. 
-        if(num[node] + left + right <= max) {
+               
+        if(num[node] + left + right <= val) {
             return num[node] + left + right;
         }
         
-        // 3개를 더하면 초과한다 -> 큰 자식을 잘라야한다.
-        if(num[node] + Math.min(left, right) <= max) {
+        if(num[node] + Math.min(left, right) <= val) {
             size += 1;
             return num[node] + Math.min(left, right);
         }
         
-        // 2개를 잘라야함. 자기 자신 반환 
         size +=2;
         return num[node];
     }
