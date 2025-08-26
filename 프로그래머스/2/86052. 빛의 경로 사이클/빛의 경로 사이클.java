@@ -36,37 +36,18 @@ class Solution {
         return answer;
     }
     
-    public int razer(int row, int col, int dir) {
+    public int razer(int r, int c, int d) {
         int result = 0;
-        Queue<int[]> q = new LinkedList<>();
-        q.offer(new int[]{row,col,dir});
-        
-        while(!q.isEmpty()) {
-            int[] now = q.poll();
-            int r = now[0]; int c = now[1]; int d = now[2];
-            
-            if(visited[r][c][d]) {
-                continue;
-            }
+
+        while(!visited[r][c][d]) {
             visited[r][c][d] = true;
-           
-            int nr = now[0] + dr[d];
-            int nc = now[1] + dc[d];
-            
-            if(nr < 0 || nr > n-1) {
-                nr = Math.abs(n-1 - now[0]);
-            }
-            
-            if(nc < 0 || nc > m-1) {
-                nc = Math.abs(m-1 - now[1]);
-            }
-            
-            int nd = nextDir(map[nr][nc], d);
-            
-            q.offer(new int[]{nr, nc, nd});
             result++;
-        }
-        
+                        
+            d = nextDir(map[r][c], d);
+            
+            r = (r + dr[d] + n)%n;
+            c = (c + dc[d] + m)%m;
+        }     
         return result;     
     }
     
