@@ -1,49 +1,42 @@
+import java.util.*;
 class Solution {
-    int[] dx = {0, 1, -1, 0}; // 상 우 좌 하 
-    int[] dy = {1, 0,  0, -1};
+    int[] dx = {0, 1, 0, -1};
+    int[] dy = {1, 0, -1 ,0};
+    int[][] map;
     public int solution(String dirs) {
-        int answer = 0;
+        // 길이를 두배로 하고, -10 -> 0으로 보정하기 (+10)
+        // 요청마다 2칸을 이동할건데, Map으로 저장하기
+        map = new int[11][11];
         
-        boolean[][][] visited = new boolean[11][11][4]; // +5, +5
-        
-        int x = 5;
-        int y = 5;
-        
+        int x = 10;
+        int y = 10;
+        Set<String> set = new HashSet<>();
         for(int i=0; i<dirs.length(); i++) {
-            int direct = direction(dirs.charAt(i));
-            
-            int nx = x + dx[direct];
-            int ny = y + dy[direct];
-            
-            if(nx < 0 || nx > 10 || ny < 0 || ny > 10) {
+            int idx = dir(dirs.charAt(i));
+            x += dx[idx];
+            y += dy[idx];
+            if(x < 0 || x > 20 || y < 0 || y > 20) {
+                x -=dx[idx];
+                y -=dy[idx];
                 continue;
             }
             
-            if(visited[nx][ny][Math.abs(3 - direct)] && 
-               visited[x][y][Math.abs(direct)]) {
-                x = nx;
-                y = ny;
-                continue;
-            }
-            visited[nx][ny][Math.abs(3 - direct)] = true;
-            visited[x][y][Math.abs(direct)] = true;
-            x = nx;
-            y = ny;
-            answer++;
+            set.add(x + " " + y);
+            x += dx[idx];
+            y += dy[idx];
         }
-        
-        return answer;
+        return set.size();
     }
     
-    public int direction(char c) {
-        if('U' == c) {
+    public int dir(char c) {
+        if(c == 'U') {
             return 0;
-        }else if('D' == c) {
-            return 3;
-        }else if('R' == c) {
+        }else if(c == 'R') {
             return 1;
-        }else {
+        }else if(c == 'D') {
             return 2;
+        }else {
+            return 3;
         }
     }
 }
