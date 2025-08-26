@@ -1,45 +1,40 @@
 import java.util.*;
 class Solution {
-    int[] parents;
+    List<List<int[]>> list = new ArrayList<>();
     public int solution(int n, int[][] costs) {
-      return kruskal(n, costs);        
-    }
-    
-    public int kruskal(int n, int[][] costs) {
-        int result = 0;
-        
-        parents = new int[n+1];
-        for(int i=1; i<=n; i++) {
-            parents[i] = i;
+        for(int i=0; i<=n; i++) {
+            list.add(new ArrayList<>());
         }
         
-        Arrays.sort(costs, (x,y) -> (x[2] - y[2]));
-        
         for(int[] cost : costs) {
-            if(find(cost[0]) != find(cost[1])) {
-                union(cost[0], cost[1]);
-                result += cost[2];
+            list.get(cost[0]).add(new int[]{cost[1], cost[2]});
+            list.get(cost[1]).add(new int[]{cost[0], cost[2]});
+        }
+        
+        return prim(n, costs);
+    }
+    
+    public int prim(int n, int[][] costs) {
+        int result = 0;
+        boolean[] visited = new boolean[n+1];
+        PriorityQueue<int[]> pq = new PriorityQueue<>((x,y) -> (x[1] -y[1]));
+        pq.offer(new int[]{1, 0});
+        
+        while(!pq.isEmpty()) {
+            int[] now = pq.poll();
+            int node = now[0]; int w = now[1];
+            
+            if(visited[node]) {
+                continue;
+            }
+            
+            visited[node] = true;
+            result += w;
+            
+            for(int[] next : list.get(node)) {
+                pq.offer(next);
             }
         }
         return result;
-    }
-    
-    public void union(int a, int b) {
-        a = find(a);
-        b = find(b);
-        
-        if(a <= b) {
-            parents[b] = a;
-        }else {
-            parents[a] = b;
-        }
-    }
-    
-    public int find(int a) {
-        if(a == parents[a]) {
-            return a;
-        }
-        
-        return parents[a] = find(parents[a]);
     }
 }
