@@ -1,28 +1,25 @@
 class Solution {
-    public long solution(int r1, int r2) {
-        long answer = 0;
-        
-        for(int i=0; i<=r2; i++) {
-            double end =  Math.sqrt((double)r2*r2 - (double)i*i);
-            double start = Math.sqrt((double)r1*r1 - (double)i*i);
-            
-            // start <= t <= end
-            long start1 = (long)start;
+    public long solution(int r1, int r2) { 
           
-            long s = 0;
-            long e = (long)end;
-            if(start != (double)start1) {
-                s = start1 + 1;
-            }else {
-                s = start1;
-            }
+        int s = Math.min(r1, r2);
+        int e = Math.max(r1, r2);
+        
+        long min = (long)Math.pow(s, 2);
+        long max = (long)Math.pow(e, 2);
+        
+        long zero = 0;
+        long answer = 0;
+        for(int i=0; i<=e; i++) {
+            long x = (long)(i)*i;
             
-            if(s==0) {
-                s = 1;
-            }
+            long result = (long)Math.sqrt(max - x) - (long)Math.ceil(Math.sqrt(min - x)) + 1;
             
-            answer += e - (s - 1);            
+            answer += result;
+            if(i == 0) {
+                zero = result;
+            }
         }
-        return answer * 4;
+    
+        return (answer - zero) * 4;
     }
 }
