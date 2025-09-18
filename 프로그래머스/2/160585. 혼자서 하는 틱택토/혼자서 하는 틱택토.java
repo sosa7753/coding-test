@@ -1,116 +1,72 @@
 class Solution {
-    public int solution(String[] board) {        
-        if(check(board)) {
-            return 1;
+    public int solution(String[] board) {
+        // 안되는 경우를 생각해보자.
+        /*
+        0. O와 X 개수 차이가 2개 이상인 경우 
+        1. X가 더 많은 경우
+        2. O가 빙고인데, O <= X 인 경우
+        3. X가 빙고인데 O가 더 많은 경우 
+        */
+        
+        int[] now = counting(board);
+        int o = now[0];
+        int x = now[1];
+        
+        if(Math.abs(o - x) >=2) {
+            return 0;
         }
         
-        // X 개수가 많을 떄
-        // O 개수가 2개 이상 많을 때 
-        // O 빙고 == 1 && X 빙고 == 1 인 경우
-        // O 빙고 == 1 && O 개수랑 X개수가 같을 때 
-        // X 빙고 == 1 && O 가 1개더 많은 경우 
-        return 0;
+        if(x > o) {
+            return 0;
+        }
+        
+        if(binggo(board, 'O') && (o <= x)) {
+            return 0;
+        }
+        
+        if(binggo(board, 'X') && (o > x)) {
+            return 0;
+        }
+        
+        return 1;
     }
     
-    public boolean check(String[] board) {
-        int cntO = 0;
-        int cntX = 0;
-        int clearO = 0;
-        int clearX = 0;
-        
-        // 총 개수 , 행 빙고 세기, 열 빙고 세기 
-        for(int i=0; i<board.length; i++) {
-            int rowO = 0;
-            int rowX = 0;
-            int colO = 0; 
-            int colX = 0;
-            for(int j=0; j<board[i].length(); j++) {
-                if('O' == board[i].charAt(j)) {
-                    cntO++;
-                    rowO++;
-                }else if('X' == board[i].charAt(j)) {
-                    cntX++;
-                    rowX++;
+    public boolean binggo(String[] board, char v) {
+        int[] check = new int[8]; // 1행 2행 3행 1열 2열 3열 왼대각 오른대각
+        for(int i=0; i<3; i++) { // 행반복
+            for(int j=0; j<3; j++) { // 열반복 
+                if(board[i].charAt(j) != v) {
+                    continue;
                 }
                 
-                if('O' == board[j].charAt(i)) {
-                    colO++;
-                }else if('X' == board[j].charAt(i)) {
-                    colX++;
+                check[i]++;
+                check[j+3]++;
+                if(i == j) check[6]++;
+                if(i + j == 2) check[7]++;      
+            }
+        } 
+        
+        for(int i=0; i<check.length; i++) {
+            if(check[i] == 3) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    public int[] counting(String[] board) {
+        int o  = 0;
+        int x  = 0;
+        for(int i=0; i<3; i++) {
+            for(int j=0; j<3; j++) {
+                if(board[i].charAt(j) == 'O') {
+                    o++;
+                }else if(board[i].charAt(j) == 'X') {
+                    x++;
                 }
             }
-            
-            if(rowO == 3) {
-                clearO++;
-            }
-            
-            if(rowX == 3) {
-                clearX++;
-            }
-            
-            if(colO == 3) {
-                clearO++;
-            }
-            
-            if(colX == 3) {
-                clearX++;
-            }
         }
         
-        // X가 많을 때, O가 두 개이상 많을 때 
-        if(cntX > cntO || cntO - cntX >= 2) {
-            return false;
-        }
-        
-        // 양쪽 대각선 세기  
-        int sameO = 0;
-        int sameX = 0;
-        int reverseO = 0;
-        int reverseX = 0;
-        for(int i=0; i<board.length; i++) { // 행           
-            // 정
-            if(board[i].charAt(i) == 'O') {
-                sameO++;
-            }else if(board[i].charAt(i) == 'X') {
-                sameX++;
-            }
-            
-            // 반
-            if(board[i].charAt(2-i) == 'O') {
-                reverseO++;
-            }else if(board[i].charAt(2-i) == 'X') {
-                reverseX++;
-            }
-            
-            if(sameO == 3) {
-                clearO++;
-            }
-            
-            if(sameX == 3) {
-                clearX++;
-            }
-            
-            if(reverseO == 3) {
-                clearO++;
-            }
-            
-            if(reverseX == 3) {
-                clearX++;
-            }    
-        }
-        
-        if(clearO >=1 && cntO == cntX) {
-            return false;
-        }
-        
-        if(clearX >=1 && cntO - cntX == 1) {
-            return false;
-        }
-        
-        if(clearO ==1 && clearX ==1) {
-            return false;
-        }
-        
-        return true;
+        return new int[]{o, x};
     }
 }
