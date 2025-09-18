@@ -1,39 +1,24 @@
-// 1차원 배열로 0~n-1로 만들어줌.
-// idx 행에서 숫자를 채워 나가서 모두 채워지면 ++
-
 class Solution {
-    int[] board;
-    int answer;
-    public int solution(int n) {
-        answer = 0;
-        
-        board = new int[n];
-        
-        nQueen(0,n);
+    int answer = 0;
+    public int solution(int n) {     
+        DFS(0, n, 0,0,0);
         return answer;
     }
     
-    public void nQueen(int row, int n) {
-        if(row == n) {
+    public void DFS(int r, int n, int col, int ld, int rd) {
+        if(r == n) {
             answer++;
             return;
         }
         
-        for(int i=0; i<n; i++) {
-            board[row] = i;
+        // 이용할 수 있는 곳은 col,ld,rd에서 모두 0인 부분만 남기기(64비트 뒷부분 자르기 )
+        int a = ((1 << n) - 1) & ~(col | ld | rd);
+        
+        while(a != 0) {
+            int pos = a & -a; // 가장 오른쪽 1비트 추출
+            a -= pos; // 그 비트 제거
             
-            if(check(row)) {
-            nQueen(row+1,n);
-            }   
-        }      
+            DFS(r+1, n, (col | pos), (ld | pos) << 1, (rd | pos) >> 1);
+        }   
     }
-    
-    public boolean check(int row) {
-        for(int i=0; i<row; i++) {
-            if(board[row] == board[i] || row - i == Math.abs(board[row] - board[i])) {
-                return false;
-            }
-        }
-        return true;
-    } 
 }
