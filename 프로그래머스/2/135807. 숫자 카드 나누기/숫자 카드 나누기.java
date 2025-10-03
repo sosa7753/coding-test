@@ -1,7 +1,5 @@
-import java.util.*;
 class Solution {
-    public int solution(int[] arrayA, int[] arrayB) {
-        
+    public int solution(int[] arrayA, int[] arrayB) {       
         int maxA = arrayA[0];
         int maxB = arrayB[0];
         for(int i=1; i<arrayA.length; i++) {
@@ -9,43 +7,32 @@ class Solution {
             maxB = gcd(maxB, arrayB[i]);
         }
         
-        int max = 0;
-        if(maxA != 1) {
-            boolean isfalseA = true;
-            for(int i=0; i<arrayB.length; i++) {
-                if(arrayB[i]%maxA !=0) {
-                    continue;
-                }
-                isfalseA = false;
-                break;
-            }
-            if(isfalseA) {
-                max = Math.max(max, maxA);
-            }
+        int answer = 0;
+        for(int i=0; i<arrayA.length; i++) {
+           if(arrayA[i]%maxB == 0) {
+               break;
+           }
+           if(i == arrayA.length-1) {
+               answer = Math.max(answer, maxB);
+           }
         }
         
-        if(maxB != 1) {
-            boolean isfalseB = true;
-            for(int i=0; i<arrayA.length; i++) {
-                if(arrayA[i]%maxB !=0) {
-                    continue;
-                }
-                isfalseB = false;
-                break;
-            }
-            if(isfalseB) {
-                max = Math.max(max, maxB);
-            }
+        for(int i=0; i<arrayB.length; i++) {
+           if( arrayB[i]%maxA == 0) {
+               break;
+           }
+           if(i == arrayB.length-1) {
+               answer = Math.max(answer, maxA);
+           }
         }
         
-        return max;
+        return answer;
     }
     
-    public int gcd(int a, int b) {
+    public int gcd(int a, int b) { // a = b * q + r , gcd(a, b) = gcd(b, r);  
         if(b == 0) {
             return a;
-        } 
-            
+        }
         return gcd(b, a%b);
     }
 }
