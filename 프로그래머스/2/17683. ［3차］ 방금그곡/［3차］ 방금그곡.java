@@ -1,64 +1,69 @@
 import java.util.*;
 class Solution {
+    PriorityQueue<Song> pq = new PriorityQueue<>((x,y) -> {
+        if(x.interval == y.interval) {
+            return x.s - y.s;
+        }else {
+            return y.interval - x.interval;
+        }
+    });
     public String solution(String m, String[] musicinfos) {
-        StringBuilder sb;
-       
-        int clock = 0;
-        int maxLen = 0;
-        String tmp = "";
-        
         String M = change(m);
-           
-        for(int i=0; i<musicinfos.length; i++) {  
-            String[] s = musicinfos[i].split(",");
-            
-            clock = time(s[0]);           
-            int gap = time(s[1]) - clock;
         
-            int cnt = 0;
-            int p = 0;
-            sb = new StringBuilder();
+        for(String music : musicinfos) {
+            String[] mu = music.split(",");
+            int start = time(mu[0]);
+            int gap = time(mu[1]) - start;
             
-            String str = change(s[3]);
+            String check = change(mu[3]);   
+            char[] c = check.toCharArray();
+            
+            int cnt = 0;
+            StringBuilder sb = new StringBuilder();
             while(cnt < gap) {
-                sb.append(String.valueOf(str.charAt(p)));
-                  
+                sb.append(c[cnt%c.length]);
                 cnt++;
-                p++;
-                if(p == str.length()) {
-                    p = 0;
-                }
             }
             
-            if(sb.toString().contains(M)) {
-                if(maxLen < gap) {
-                    maxLen = gap;
-                    tmp = s[2];
-                }
-            }         
-        }
             
-        if("".equals(tmp)) {
+            if(sb.toString().contains(M)) {
+                Song song = new Song(start, gap, mu[2]);
+                pq.offer(song);
+            }
+            
+        }
+        
+        if(pq.isEmpty()) {
             return "(None)";
-        }else {
-            return tmp;
-        }        
+        }
+        
+        return pq.poll().name;
     }
     
-    public int time(String clock) {
-        String[] str = clock.split(":");
-        
+    public int time(String s) {
+        String[] str = s.split(":");
         return Integer.parseInt(str[0]) * 60 + Integer.parseInt(str[1]);
-    } 
+    }
     
     public String change(String s) {
         String result = s;
-        // A# C# D# F# G# 
-        String[] origin = {"A#","B#","C#", "D#", "F#", "G#"};
+        String[] origin = {"A#", "B#", "C#", "D#", "F#", "G#"};
         String[] next = {"H", "I", "J", "K", "L", "M"};
-        for(int i=0; i<origin.length; i++) {
+        
+        for(int i=0; i<next.length; i++) {
             result = result.replace(origin[i], next[i]);
         }
         return result;
+    }
+}
+
+class Song {
+    int s;
+    int interval;
+    String name; 
+    Song(int s, int interval, String name) {
+        this.s = s;
+        this.interval = interval;
+        this.name = name;
     }
 }
