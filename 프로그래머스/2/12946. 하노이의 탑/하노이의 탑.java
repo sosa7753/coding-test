@@ -1,24 +1,25 @@
 import java.util.*;
 class Solution {
-    List<int[]> list = new ArrayList<>();
+    List<int[]> result = new ArrayList<>();
     public int[][] solution(int n) {
+  
         hanoi(1, 2, 3, n);
         
-        int[][] answer = new int[list.size()][2];
+        int[][] answer = new int[result.size()][2];
         int idx = 0;
-        for(int[] l : list) {
-            answer[idx++] = l; 
+        for(int[] r : result) {
+            answer[idx++] = r;
         }
         return answer;
     }
     
-    public void hanoi(int start, int mid, int end, int cnt) {
-        if(cnt == 0) {
+    public void hanoi(int s, int m, int e, int h) {
+        if(h == 0) {
             return;
         }
         
-        hanoi(start, end, mid, cnt-1);
-        list.add(new int[]{start, end});
-        hanoi(mid, start, end, cnt-1);
+        hanoi(s, e, m, h-1);
+        result.add(new int[]{s, e});
+        hanoi(m, s, e, h-1);
     }
 }
