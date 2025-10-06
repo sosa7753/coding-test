@@ -1,41 +1,24 @@
 class Solution {
-    // (0,0) -> (8,12)   (1,1.5)   =  (2/3 , 1)
-    public long solution(int w, int h) {   
-        long x = (long)w;
-        long y = (long)h;
+    public long solution(int w, int h) {
+        int div = gcd(w, h);
+        int r = w/div;
+        int c = h/div;
         
-        return lose(w, h);
+        long cnt = 0;
+        double pre = 0;
+        for(int i=1; i<=r; i++) {
+            cnt += (long)Math.ceil(i * (double)c/r) - (long)pre;
+            pre = i * (double)c/r;
+        }
+        return (long)w*h - cnt * div;
+               
     }
     
-    public long lose(long x, long y) {
-        long result = x * y;
-        
-        long first = 0;
-        long second = 0;
-        if(x >= y) {
-            first = x;
-            second = y;
-        }else {
-            first = y;
-            second = x;
+    public int gcd(int a, int b) {
+        if(b == 0) {
+            return a;
         }
         
-        double startS = 0;
-        // first 순회
-        for(int i=1; i<=first; i++) {
-            double nextY = ((double)second/(double)first) * (double)i;
-            
-            if(nextY < startS + 1) {
-                result--;
-            }else if(nextY == startS + 1) {
-                result--;
-                startS = nextY;
-            }else {
-                result = result - ((int)nextY - (int)startS + 1);   
-                int tmp = (int)nextY;
-                startS = (double)tmp;
-            }
-        }
-        return result;
+        return gcd(b, a%b);       
     }
 }
