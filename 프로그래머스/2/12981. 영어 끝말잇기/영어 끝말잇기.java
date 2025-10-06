@@ -1,31 +1,27 @@
 import java.util.*;
 class Solution {
     public int[] solution(int n, String[] words) {
-        int[] result = new int[2];
-        Map<String, Integer> map = new HashMap<>();
+        int[] answer = new int[2];
         
-        int[] answer = new int[n]; // n번째 사람의 차례 값.
-        
-        int cnt = 0;
-        String pre = words[0].substring(0,1); 
-        for(int i=0; i<words.length; i++) {
-            // 먼저 차례 높여주기 
-            answer[cnt%n]++;
-            
-            // 끝 값이 다르거나 map에 포함됨.
-            if(pre.charAt(pre.length()-1) != words[i].charAt(0) || 
-               map.containsKey(words[i])) {
-                
-               result[0] = cnt%n + 1;
-               result[1] = answer[cnt%n];
-               return result;             
+        Set<String> set = new HashSet<>();
+        set.add(words[0]);
+        String pre =  words[0];
+        for(int i=1; i<words.length; i++) {
+            if((pre.charAt(pre.length()-1) != words[i].charAt(0)) ||
+              set.contains(words[i])) {
+                if((i+1)%n == 0) {
+                    answer[0] = n;
+                }else {
+                    answer[0] = (i+1)%n;
+                }
+                answer[1] = i/n + 1;
+                break;
             }
             
             pre = words[i];
-            map.put(words[i], 1);
-            cnt++;
+            set.add(words[i]);
         }
 
-        return new int[] {0,0};
+        return answer;
     }
 }
