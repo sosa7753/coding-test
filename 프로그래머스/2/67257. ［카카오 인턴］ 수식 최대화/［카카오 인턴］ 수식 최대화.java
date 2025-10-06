@@ -1,91 +1,74 @@
+import java.util.*;
 class Solution {
-    String[] cal = {"+", "-", "*"};
-    boolean[] visited = new boolean[3];
-    long max = 0;
+    char[] c = {'+', '-', '*'};
+    long answer = 0;
     public long solution(String expression) {
-      
-        String[] arr = new String[3];
-        DFS(arr, expression, 0);
-        return max;
+        List<Long> nums = new ArrayList<>();
+        List<Character> ops = new ArrayList<>();
+        tokenize(expression, nums, ops);
+
+        boolean[] used = new boolean[3];
+        int[] order = new int[3];
+        dfs(nums, ops, order, used, 0);
+
+        return answer;
     }
-    
-    public void DFS(String[] arr, String expression, int depth) {
-        if(depth == arr.length) {
-            result(arr, expression, new boolean[3], 0);
+
+    public void tokenize(String expr, List<Long> nums, List<Character> ops) {
+        int n = expr.length();
+        int i = 0;
+        while (i < n) {
+            int j = i;
+            while (j < n && Character.isDigit(expr.charAt(j))) j++;
+            nums.add(Long.parseLong(expr.substring(i, j)));
+            if (j < n) ops.add(expr.charAt(j));
+            i = j + 1;
+        }
+    }
+
+    // 연산자 우선순위 순열
+    public void dfs(List<Long> nums, List<Character> ops, int[] order, boolean[] used, int depth) {
+        if (depth == 3) {
+            long val = evaluate(nums, ops, order);
+            answer = Math.max(answer, Math.abs(val));
             return;
         }
-        
-        for(int i=0; i<3; i++) {
-            if(visited[i]) {
-                continue;
-            }
-            arr[depth] = cal[i];
-            visited[i] = true;
-            DFS(arr, expression, depth+1);
-            visited[i] = false;
+        for (int i = 0; i < 3; i++) {
+            if (used[i]) continue;
+            used[i] = true;
+            order[depth] = i;
+            dfs(nums, ops, order, used, depth + 1);
+            used[i] = false;
         }
     }
-    
-    public void result(String[] arr, String expression, boolean[] visited, int cnt) {
-        if(cnt == 3) {
-            max = Math.max(Math.abs(Long.parseLong(expression)), max);
-            return;
-        }
-        visited[cnt] = true;
-        
-        String str = expression;
-            
-        // +, -, *이 되었다 하자.
-        
-        if(!visited[(cnt+1)%3]) {
-            String[] s1 = str.split("\\" + arr[(cnt+1)%3]); // -로 나뉜 값
-            for(String s11 : s1) {
-                if(!visited[(cnt+2)%3]) {
-                    String[] s2 = s11.split("\\" + arr[(cnt+2)%3]); // 각 *로 나뉜 값.
-                    for(String s22 : s2) {  // 각각을 +로 계산 
-                        if(s22.contains(arr[cnt%3])) {
-                            long tmp = calcul(s22, arr[cnt%3]);
-                            str = str.replace(s22, String.valueOf(tmp));
-                        }                 
-                    }
-                }else {
-                    if(s11.contains(arr[cnt%3])) {
-                        long tmp = calcul(s11, arr[cnt%3]);
-                        str = str.replace(s11, String.valueOf(tmp));
-                    } 
+
+    // 주어진 우선순위로 평가 (리스트를 제자리 축소)
+    private long evaluate(List<Long> baseNums, List<Character> baseOps, int[] order) {
+        List<Long> nums = new ArrayList<>(baseNums);
+        List<Character> ops = new ArrayList<>(baseOps);
+
+        for (int k = 0; k < 3; k++) {
+            char op = c[order[k]];
+            for (int i = 0; i < ops.size();) {
+                if (ops.get(i) == op) {
+                    long a = nums.remove(i);
+                    long b = nums.remove(i);
+                    long r = calc(a, b, op);
+                    nums.add(i, r);
+                    ops.remove(i);
+                } else {
+                    i++;
                 }
             }
-        }else {
-            if(str.contains(arr[cnt%3])) {
-                long tmp = calcul(str, arr[cnt%3]);
-                str = str.replace(str, String.valueOf(tmp));
-            }
         }
-        
-        result(arr, str, visited, cnt+1);
+        return nums.get(0);
     }
-    
-    public long calcul(String s, String operator) {
-        String[] str = s.split("\\" + operator);
-        
-        long value = 0;
-        for(int i=0; i<str.length; i++) {
-            if("+".equals(operator)) {
-                value += Long.parseLong(str[i]);
-            }else if("-".equals(operator)) {
-                if(i==0) {
-                    value += Long.parseLong(str[i]);
-                }else {
-                    value -= Long.parseLong(str[i]);
-                }                
-            }else {
-                if(i == 0) {
-                    value = 1;
-                }
-                value = value * Long.parseLong(str[i]);
-            }
+
+    private long calc(long a, long b, char op) {
+        switch (op) {
+            case '+': return a + b;
+            case '-': return a - b;
+            default:  return a * b;
         }
-        return value;
-        
     }
 }
