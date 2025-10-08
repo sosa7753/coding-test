@@ -1,63 +1,63 @@
 import java.util.*;
 class Solution {
-    int[] dx = {0, 1, 0, -1};
-    int[] dy = {-1, 0, 1, 0};
+    int[] dr = {-1, 0, 1, 0};
+    int[] dc = {0, 1, 0, -1};
+    int m, n;
+    int[][] pic;
     boolean[][] visited;
-    int region = 0;
-    public int[] solution(int m, int n, int[][] picture) {       
-        visited = new boolean[m][n];     
+    public int[] solution(int m, int n, int[][] picture) {
+        this.m = m;
+        this.n = n;
+        pic = picture;
+        
+        int cnt = 0;
         int max = 0;
+        visited = new boolean[m][n];
         for(int i=0; i<m; i++) {
             for(int j=0; j<n; j++) {
-                if(!visited[i][j] && picture[i][j] != 0) {
-                    max = Math.max(max, area(picture, i, j));
-                }                
+                if(picture[i][j] == 0) continue;
+                
+                if(visited[i][j]) continue;
+                visited[i][j] = true;
+                max = Math.max(max, BFS(i, j, picture[i][j]));
+                cnt++;
             }
         }
         
         int[] answer = new int[2];
-        answer[0] = region;
+        answer[0] = cnt;
         answer[1] = max;
         return answer;
     }
     
-    public int area(int[][] picture, int row, int col) {
-        int result = 0;
-        Queue<int[]> queue = new LinkedList<>(); 
-        queue.offer(new int[] {row, col});
+    public int BFS(int row, int col, int v) {
+        Queue<int[]> q = new LinkedList<>();
+        q.offer(new int[]{row, col});
         
-        int check = picture[row][col];
-        visited[row][col] = true;
-        result = 1;
-        
-        boolean isfalse = true;
-        while(!queue.isEmpty()) {
-            int[] now = queue.poll(); // 행, 열 
+        int cnt = 1;
+        while(!q.isEmpty()) {
+            int[] now = q.poll();
+            int r = now[0]; int c = now[1]; 
             
             for(int i=0; i<4; i++) {
-                int r = now[0] + dy[i];
-                int c = now[1] + dx[i];
+                int nr = r + dr[i];
+                int nc = c + dc[i];
                 
-                if(r < 0 || r > picture.length - 1 || 
-                   c < 0 || c > picture[0].length - 1 ) {                   
+                if(nr < 0 || nr > m-1 || nc < 0 || nc > n-1) {
                     continue;
                 }
                 
-                if(visited[r][c]) {
+                if(visited[nr][nc]) {
                     continue;
                 }
                 
-                if(picture[r][c] != check) {
-                    continue;
+                if(pic[nr][nc] == v) {
+                    q.offer(new int[]{nr, nc});
+                    visited[nr][nc] = true;
+                    cnt++;
                 }
-                
-                visited[r][c] = true;
-                result++;
-                queue.offer(new int[] {r, c});
             }
         }
-        
-        region++;
-        return result;
+        return cnt;
     }
 }
