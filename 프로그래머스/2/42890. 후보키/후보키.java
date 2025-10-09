@@ -1,65 +1,50 @@
 import java.util.*;
 class Solution {
-    List<String> list = new ArrayList<>(); // 튜플만 저장 
     public int solution(String[][] relation) {
-        BFS(relation);        
-        return list.size();
+        int r = relation.length;
+        int c = relation[0].length;
+        
+        List<Integer> list = new ArrayList<>();
+        
+        List<Integer> subsets = new ArrayList<>();
+        for(int i=1; i < (1<<c); i++) { // 111111.. 길이가 c만큼 
+            subsets.add(i); // 경우의수 다넣기 (부분 집합)
+            subsets.sort((x,y) -> 
+                         ((int)Integer.bitCount(x) - (int)Integer.bitCount(y))); // 비트 1의 개수 오름차순 정렬
+        }
+        
+        for(int mask : subsets) {
+            boolean isMin = false;
+            for(int key : list) {
+                if((mask & key) == key) { // 리스트 후보키 값이 mask에 포함된다면 false
+                    isMin = true;
+                    break;
+                }
+            }
+            if(isMin) continue;
+            
+            if(check(mask, relation)) {
+                list.add(mask);
+            }
+        }
+        
+       return list.size();
     }
     
-    public void BFS(String[][] relation) {
-        Queue<String> queue = new LinkedList<>();
-        
-        for(int i=0; i<relation[0].length; i++) {
-            queue.offer(String.valueOf(i));
-        }
-        
-        while(!queue.isEmpty()) {
-            String now = queue.poll();
-            
-            boolean isTrue = true;
-            if(check(relation, now)) { // 튜플 후보 중에 
-                for(String l : list) {
-                    int count = 0;
-                    for(int i=0; i<l.length(); i++) {                     
-                        if(now.contains(String.valueOf(l.charAt(i)))) {
-                           count++; 
-                        }                      
-                    }
-                    if(count == l.length()) {
-                        isTrue = false;
-                        break;
-                    }
-                }
-                
-                if(isTrue) {
-                    list.add(now);
-                }
-            }
-                      
-            int start = (now.charAt(now.length()-1) - '0') + 1;
-            for(int i=start; i<relation[0].length; i++) {
-                queue.offer(now + String.valueOf(i));
-            }
-        }      
-    } 
-    
-    public boolean check(String[][] relation, String key) {
+    public boolean check(int mask, String[][] relation) {
         Set<String> set = new HashSet<>();
-        
         for(int i=0; i<relation.length; i++) {
-            String s = "";
-            
-            for(int j=0; j<key.length(); j++) {
-                int idx = key.charAt(j) - '0';
-                s += relation[i][idx] + " ";
+            StringBuilder sb = new StringBuilder();
+            for(int col = 0; col < relation[0].length; col++) {
+                if((mask & (1 << col)) != 0) {
+                    sb.append(relation[i][col]).append(",");
+                }
             }
-            set.add(s);
+            set.add(sb.toString());
         }
-        
         if(set.size() == relation.length) {
             return true;
-        } 
-        
+        }
         return false;
     }
 }
