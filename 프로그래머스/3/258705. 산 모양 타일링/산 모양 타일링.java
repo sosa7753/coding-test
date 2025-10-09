@@ -1,8 +1,8 @@
 class Solution {
-    int MOD = 10007;
-    public int solution(int n, int[] tops) {       
-        int[] ok = new int[n]; // 오른쪽 마름모를 사용 
-        int[] no = new int[n]; // 오른쪽 마름모를 사용 X 
+    long INF = 10007L;
+    public int solution(int n, int[] tops) {
+        long[] ok = new long[n]; // 오른쪽 마름모만
+        long[] no = new long[n]; // 그 외
         
         ok[0] = 1;
         if(tops[0] == 1) {
@@ -12,15 +12,14 @@ class Solution {
         }
         
         for(int i=1; i<n; i++) {
-            ok[i] = ok[i-1] + no[i-1]; // 오른쪽 마름모를 쓰면 전부 가능
+            ok[i] = (ok[i-1] + no[i-1])%INF;
             
-            if(tops[i] == 1) { 
-                no[i] = (no[i-1] * 3 + ok[i-1] * 2) % MOD; 
+            if(tops[i] == 1) {
+                no[i] = (no[i-1] * 3 + ok[i-1] * 2)%INF;
             }else {
-                no[i] = (no[i-1] * 2 + ok[i-1]) % MOD;
+                no[i] = (no[i-1] * 2 + ok[i-1])%INF;
             }
         }
-        
-        return (ok[n-1] + no[n-1]) % MOD;
+        return (int)((ok[n-1] + no[n-1])%INF);
     }
 }
