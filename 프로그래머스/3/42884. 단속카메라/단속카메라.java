@@ -1,17 +1,26 @@
 import java.util.*;
 class Solution {
-    public int solution(int[][] routes) {   
+    public int solution(int[][] routes) {
+        // 시작 시간 작은순 정렬
+        // 범위를 체크해서 겹치는 곳에 1개 설치
+        
+        Arrays.sort(routes, (x,y) -> (x[0] - y[0]));
+        
         int answer = 0;
-        Arrays.sort(routes, (x,y) -> (x[1]-y[1]));
-
-        int last = Integer.MIN_VALUE;
+        int L = -40000;
+        int R = 40000;
         for(int[] route : routes) {
-            if(last < route[0]) {
+            if(R < route[0]) {
                 answer++;
-                last = route[1];
+                L = route[0];
+                R = route[1];
+                continue;
             }
+            
+            L = Math.max(L, route[0]);
+            R = Math.min(R, route[1]);
         }
         
-        return answer;
+        return answer+1;
     }
 }
