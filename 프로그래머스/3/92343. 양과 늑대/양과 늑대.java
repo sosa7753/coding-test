@@ -1,55 +1,36 @@
-import java.util.*;
 class Solution {
-    List<List<Integer>> list = new ArrayList<>(); // 이진트리
-    boolean[] visited;
-    int answer = 0;
+    int n, answer;
+    int[] child;
+    int[] info;
     public int solution(int[] info, int[][] edges) {
-        visited = new boolean[info.length];
-        
-        for(int i=0; i<info.length; i++) {
-            list.add(new ArrayList<>());
+        n = info.length;
+        this.info = info;
+
+        child = new int[n];
+        for(int[] edge : edges) {
+            int idx = edge[0];
+            int c = edge[1];
+            child[idx] |= (1 << c);
         }
         
-        for(int i=0; i<edges.length; i++) {
-            list.get(edges[i][0]).add(edges[i][1]);
-        }
-        
-        DFS(info, 0, 1, 0, new ArrayList<>());              
+        answer = 0;
+        DFS(0, 0, 1 << 0);
         return answer;
     }
     
-    public void DFS(int[] info, int node, int sheep, int wolf, List<Integer> next) {
-        for(int arrive : list.get(node)) {
-            next.add(arrive);
-        }
-                
-        int s = 0;
-        int w = 0;
-        for(int i=0; i<next.size(); i++) {
-            int nextNode = next.get(i); 
-            if(visited[nextNode]) {
-                continue;
-            }
-            
-            s = sheep;
-            w = wolf;
-            if(info[nextNode] == 0) {
-                s++;
-            }else {
-                w++;
-            }
-                        
-            if(s == w) { // 잡아먹힘
-               answer = Math.max(answer, s);
-               continue;
-            }
-
-            visited[nextNode] = true;
-            List<Integer> nNext = new ArrayList<>(next);
-            nNext.remove(i);
-            DFS(info, nextNode, s, w, nNext);
-            visited[nextNode] = false;
-        }
+    public void DFS(int sheep, int wolf, int next) {
         answer = Math.max(answer, sheep);
-    } 
+        
+        for(int i=0; i<n; i++) {
+            if((next & (1 << i)) == 0) continue;
+            
+            int ns = sheep + (info[i] == 0 ? 1 : 0);
+            int nw = wolf + (info[i] == 1 ? 1 : 0);
+            
+            if(nw >= ns) continue;
+            
+            int nextRoute = (next | child[i]) & ~(1 << i);
+            DFS(ns, nw, nextRoute);
+        }
+    }
 }
