@@ -3,17 +3,19 @@ class Solution {
     List<List<Integer>> list = new ArrayList<>();
     int cnt = 0;
     int max = 0;
-    public int solution(int n, int[][] edges) {      
+    int n;
+    public int solution(int n, int[][] edges) {
+        this.n = n;
+        
         for(int i=0; i<=n; i++) {
             list.add(new ArrayList<>());
         }
         
-        for(int i=0; i<edges.length; i++) {
-            list.get(edges[i][0]).add(edges[i][1]);
-            list.get(edges[i][1]).add(edges[i][0]);
+        for(int[] edge : edges) {
+            list.get(edge[0]).add(edge[1]);
+            list.get(edge[1]).add(edge[0]);
         }
         
-        // 3번 탐색. 가장 먼 정점 찾기 -> 다른 정점 찾기 -> 지름 경로 개수 찾기
         int node = edges[0][0];
         for(int i=0; i<3; i++) {
             node = BFS(node);
@@ -21,36 +23,39 @@ class Solution {
                 cnt = 0;
                 continue;
             }else {
-                return max;
+                return max; // 지름이 2개이상
             }
-        }                
-        return max -1;
+        }
+    
+        // 트리의 지름 :  a로 해서 가장 멀리간 점. 여기서 가장 멀리간 점 = 지름의 한 노드
+        // 지름이 2개면? 중간값은 지름
+        // 지름이 1개면? 지름 -1      
+        return max - 1;
     }
-    public int BFS(int node) {
-        boolean[] visited = new boolean[250001];
-        Queue<int[]> queue = new LinkedList<>();
-        queue.offer(new int[]{node, 0}); // 현재 점, 깊이
-        visited[node] = true;
+    
+    public int BFS(int start) {
+        boolean[] visited = new boolean[n+1];
+        Queue<int[]> q = new LinkedList<>();
+        q.offer(new int[]{start, 0});
+        visited[start] = true;
         
         int last = 0;
-        while(!queue.isEmpty()) {
-            int[] tmp = queue.poll();
-            int now = tmp[0];
-            last = now;
-            int dep = tmp[1];
+        while(!q.isEmpty()) {
+            int[] now = q.poll();
+            int cur = now[0]; int dep = now[1]; 
+            last = cur;
             
-            for(int i=0; i<list.get(now).size(); i++) {
-                int next = list.get(now).get(i);
-                if(!visited[next]) {
-                    queue.offer(new int[] {next, dep+1});
-                    
-                    if(dep+1 == max) {
-                        cnt++;
-                    }else if(dep+1 > max) {
-                        cnt = 1;
-                        max = dep+1;
-                    }
-                    visited[next] = true;
+            for(int next : list.get(cur)) {
+                if(visited[next]) continue;
+                
+                visited[next] = true;
+                q.offer(new int[]{next, dep+1});
+                
+                if(dep+1 == max) {
+                    cnt++;
+                }else if(dep+1 > max) {
+                    cnt = 1;
+                    max = dep+1;
                 }
             }
         }
