@@ -1,30 +1,29 @@
-import java.util.*;
 class Solution {
     public long solution(int n, int[] times) {
-        Arrays.sort(times); 
-        long max = (long)n * times[0];
-      
-        long left = 0;
-        long right = max;
-        while(left <= right) {
-            long mid = (right + left)/2;   
-            long cnt = 0;
+        long answer = 0;
+        
+        long max = 0;
+        for(int i=0; i<times.length; i++) {
+            max = Math.max(max, times[i]);
+        }
+        
+        long l = 0;
+        long r = max * n;
+        while(l <= r) {
+            long mid = (r-l)/2 + l;
             
-            boolean isTrue = false;
+            long result = 0;
             for(int i=0; i<times.length; i++) {
-                cnt += mid/(long)times[i];
-                if(cnt >= (long)n) {
-                    isTrue = true;
-                    break;
-                }
+                result += mid/times[i];
             }
             
-            if(isTrue) {
-                right = mid - 1;                
+            if(result < (long)n) {
+                l = mid + 1;
             }else {
-                left = mid + 1;
+                r = mid - 1;
+                answer = mid;
             }
         }
-        return left;
+        return answer;
     }
 }
