@@ -1,67 +1,67 @@
 import java.util.*;
 class Solution {
-    int[] arr;
     int answer = Integer.MAX_VALUE;
-    public int solution(int k, int n, int[][] reqs) {
-        arr = new int[k];
+    Map<Integer, List<int[]>> map = new HashMap<>();
+    public int solution(int k, int n, int[][] reqs) {       
+        // x + y + z + w + v = 15  19C4 = 경우의 수 가능 
+        // DFS로 각 담당 배정하기
+        // Map과 List로 상담 시작 기준 정렬해놓기
+        // DFS를 토대로 Map과 계산하기 
         
-        DFS(0, n-k, reqs);
+        for(int[] req : reqs) {
+            int s = req[0]; int e = req[1]; int type = req[2];
+            map.computeIfAbsent(type, key -> new ArrayList<>()).
+                add(new int[]{s, e});        
+        }
+        
+        int[] arr = new int[k+1]; // 1~k 유형 인원수
+        DFS(arr, 1, n-k);
         return answer;
     }
     
-    // 중복조합의 DFS 연산 
-    public void DFS(int cnt, int max, int[][] reqs) {
-        if(cnt == arr.length) {
-            answer = Math.min(answer, cal(reqs));
+    public void DFS(int[] arr, int t, int remain) {
+        if(t == arr.length) {
+            if(remain == 0) {
+               answer = Math.min(answer, cal(arr));
+            }    
             return;
         }
         
-        for(int i=0; i<=max; i++) { // arr을 채워넣을 때 무조건 + 1을 해주어야함.
-            arr[cnt] = i+1;
-            DFS(cnt+1, max-i, reqs);
+        for(int i=0; i<=remain; i++) {
+            arr[t] = i;
+            DFS(arr, t+1, remain-i);
         }
     }
     
-    // 배열이 주어지면 기다린 시간 연산 
-    public int cal(int[][] reqs) {
-        int wait = 0;        
-        Map<Integer, PriorityQueue<Integer>> map = new HashMap<>();
+    public int cal(int[] arr) {
+        int result = 0;
         
-        for(int i=0; i<reqs.length; i++) {
-            int[] now = reqs[i];
-            
-            if(!map.containsKey(now[2])) {
-               map.put(now[2], new PriorityQueue<>());
-               map.get(now[2]).offer(now[0]+now[1]);
-               continue;
-            }
-            
-            // 이미 있다. 
-            PriorityQueue<Integer> pq = map.get(now[2]);
-            
-            // 비어있으면 안기다리고 바로 넣기 
-            if(pq.isEmpty()) {
-                pq.offer(now[0]+now[1]);
-                continue;
-            }
-            
-            // 종료되면 내보내기 
-            if(pq.peek() <= now[0]) {
-                pq.poll();
-            }
-            
-            // 여유 있는 경우 
-            if(arr[now[2]-1] > pq.size()) {
-                pq.offer(now[0]+now[1]);
-                continue;
-            }
-            
-            // 기다리기.
-            int tmp = pq.peek() - now[0];
-            wait += tmp;
-            pq.poll();
-            pq.offer(now[0]+now[1] + tmp);            
+        int[] a = new int[arr.length];
+        for(int i=1; i<arr.length; i++) { // 1씩 보정
+            a[i] = arr[i]+1;
         }
-        return wait;
+        
+        for(int i=1; i<a.length; i++) {  
+            if(!map.containsKey(i)) continue;
+            
+            List<int[]> list = map.get(i);
+            
+            PriorityQueue<Integer> pq = new PriorityQueue<>(); // 빨리 끝나는 시간 기준 
+            for(int j=0; j<list.size(); j++) {
+                int[] user = list.get(j);
+                if(pq.size() >= a[i]) {
+                    int v = pq.poll();
+                    if(user[0] < v) {
+                        result += v - user[0];
+                        pq.offer(v + user[1]);
+                    }else {
+                        pq.offer(user[0] + user[1]);                        
+                    }
+                }else {
+                    pq.offer(user[0] + user[1]);
+                }
+            }
+        }
+        return result;
     }
 }
