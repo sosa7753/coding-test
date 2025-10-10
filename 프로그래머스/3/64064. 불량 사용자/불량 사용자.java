@@ -1,61 +1,47 @@
 import java.util.*;
 class Solution {
-    String[] user;
-    String[] ban;
-    boolean[] visited;
-    Set<String> set = new HashSet<>();
-    Set<String> result = new HashSet<>();       
+    List<List<Integer>> list = new ArrayList<>();
+    Set<Integer> set = new HashSet<>();
     public int solution(String[] user_id, String[] banned_id) {
-        user = user_id;
-        ban = banned_id;
-        visited = new boolean[user_id.length];
+        int n = user_id.length;
         
-        DFS(0);
-        return result.size();
+        // 각 ban별 할 수 있는 목록 List에 담기
+        // DFS를 벤 배열 길이만큼 돌려서 하나씩 뽑기
+        // Set에 비트마스크로 저장 
+        // 사이즈 출력
+        for(String ban : banned_id) {
+            List<Integer> l = new ArrayList<>();
+            for(int i=0; i<n; i++) {
+                if(match(ban, user_id[i])) {
+                    l.add(i);
+                }
+            }
+            list.add(l);
+        }
+        
+        DFS(0, 0);
+        return set.size();
     }
     
-    public void DFS(int cnt) {
-        if(cnt == ban.length) {
-           StringBuilder sb = new StringBuilder();
-           for(int i=1; i<visited.length; i++) {
-               if(visited[i]) {
-                  sb.append(i);
-                  }
-            }    
-            result.add(sb.toString());
+    public void DFS(int idx, int mask) {
+        if(idx == list.size()) {
+            set.add(mask);
             return;
         }
         
-        String check = ban[cnt];        
-        for(int i=0; i<user.length; i++) {
-            if(visited[i]) { // 이미 사용 
-                continue;
-            }
-            
-            if(check.length() != user[i].length()) { // 길이가 다름 
-                continue;
-            }
-            
-            // 될 때 넣기 
-            if(isPoor(check, user[i])) {
-                set.add(user[i]);  
-                visited[i] = true;
-                DFS(cnt+1);
-                visited[i] = false;
-                set.remove(user[i]);
-            }
+        for(int v : list.get(idx)) {
+            if((mask & (1 << v)) != 0) continue; // 실제 값이 치환되기 때문에 !=0으로 검증
+            DFS(idx+1, mask | (1 << v));
         }
     }
     
-    public boolean isPoor(String ban, String me) {
+    public boolean match(String ban, String user) {
+        if(ban.length() != user.length()) return false;
+        
         for(int i=0; i<ban.length(); i++) {
-            if(ban.charAt(i) == '*') {
-                continue;
-            }
+            if(ban.charAt(i) == '*') continue;
             
-            if(ban.charAt(i) != me.charAt(i)) {
-                return false;
-            }
+            if(ban.charAt(i) != user.charAt(i)) return false;
         }
         return true;
     }
