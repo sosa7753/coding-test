@@ -35,14 +35,12 @@ class Solution {
         char[] c = s.toCharArray();
         for(int i=0; i<c.length; i++) {      
             node = node.map.computeIfAbsent(c[i], key -> new Node());
-            node.cnt += 1;
+            node.cnt += 1; // 해당 노드에 방문한 횟수로 인식
         }
-        node.last = true;
     }
 }
 
 class Node {
     Map<Character, Node> map = new HashMap<>();
     int cnt = 0;
-    boolean last = false;
 }
