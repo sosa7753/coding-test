@@ -1,59 +1,48 @@
+import java.util.*;
 class Solution {
     Node root;
     public int solution(String[] words) {
-        int answer = 0;        
-        root = new Node('0', 0);
+        root = new Node();
         
-        for(int i=0; i<words.length; i++) {
-            addTrie(words[i]);
+        for(String word : words) {
+            insert(word);
         }
         
-        for(int i=0; i<words.length; i++) {
-            answer += find(words[i]);
-        }        
+        int answer = 0;
+        for(String word : words) {
+            answer += search(word);
+        }
         
         return answer;
     }
     
-    public void addTrie(String s) {
+    public int search(String s) {
+        int result = 0;
         Node node = root;
-        for(int i=0; i<s.length(); i++) {
-            int idx = s.charAt(i) - 'a';
-            
-            if(node.next[idx] == null) { // 처음 방문한 문자
-                node.next[idx] = new Node(s.charAt(i), 0);
+        char[] c = s.toCharArray();
+        for(int i=0; i<c.length; i++) {
+            node = node.map.get(c[i]);
+            result++;
+            if(node.cnt == 1) {
+                break;
             }
-            
-            node.next[idx].cnt++;
-            node = node.next[idx];
         }
+        return result;
     }
     
-    public int find(String s) {
+    public void insert(String s) {
         Node node = root;
-        int dep = 1;
-        
-        for(int i=0; i<s.length(); i++) {
-            int idx = s.charAt(i) - 'a';
-            
-            if(node.next[idx].cnt >=2) { // 검색이 2개이상이다.
-                dep++;
-                node = node.next[idx];
-            }else { // 1개다.
-                return dep;
-            }
+        char[] c = s.toCharArray();
+        for(int i=0; i<c.length; i++) {      
+            node = node.map.computeIfAbsent(c[i], key -> new Node());
+            node.cnt += 1;
         }
-        return dep-1;
+        node.last = true;
     }
 }
 
 class Node {
-    char now;
-    int cnt;
-    Node[] next;
-    Node(char now, int cnt) {
-        this.now = now;
-        this.cnt = cnt;
-        next = new Node[26]; // a~z
-    }
+    Map<Character, Node> map = new HashMap<>();
+    int cnt = 0;
+    boolean last = false;
 }
