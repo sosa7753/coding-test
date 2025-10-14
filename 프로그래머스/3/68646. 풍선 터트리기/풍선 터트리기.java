@@ -1,24 +1,18 @@
+import java.util.*;
 class Solution {
     public int solution(int[] a) {
-        int answer = 1;
+        int n = a.length;
         
-        int len = a.length;
-        
-        int[] R = new int[len];
-        R[len-1] = a[len-1];
-        
-        for(int i=len-2; i>=0; i--) {
-            R[i] = Math.min(R[i+1], a[i]);
+        int L = Integer.MAX_VALUE;
+        int R = Integer.MAX_VALUE;
+        // Set에 가능한 값을 넣자.
+        Set<Integer> set = new HashSet<>();
+        for(int i=0; i<n; i++) {
+            L = Math.min(L, a[i]); // 왼쪽에서 작은 값이면 가능
+            R = Math.min(R, a[n-1-i]); // 오른쪽에서도 작은 값이면 가능
+            set.add(L);
+            set.add(R);
         }
-        
-        int L = a[0];
-        for(int i=1; i<len; i++) {
-            L = Math.min(L, a[i]);
-            if(a[i] > R[i] && L < a[i]) {
-                continue;
-            }
-            answer++;
-        }
-        return answer;
+        return set.size();
     }
 }
