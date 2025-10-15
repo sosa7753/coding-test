@@ -1,35 +1,29 @@
 class Solution {
     public int solution(int[] cookie) {
+        int n = cookie.length;
         int answer = 0;
-        
-        int[] S = new int[cookie.length+1];       
-        for(int i=1; i<S.length; i++) {
-            S[i] = S[i-1] + cookie[i-1];
-        }
-                
-        for(int i=1; i<S.length-1; i++) {
-            for(int j=i+1; j<S.length; j++) {
-                int sum = S[j] - S[i-1];              
-                if(sum%2 == 1 || answer * 2 > sum) {
-                    continue;
+
+        // mid: 왼쪽 덩어리의 끝, 오른쪽 덩어리의 시작은 mid+1
+        for (int mid = 0; mid < n - 1; mid++) {
+            int l = mid;
+            int r = mid + 1;
+            int left = cookie[l];
+            int right = cookie[r];
+
+            while (true) {
+                if (left == right) {
+                    answer = Math.max(answer, left);
                 }
-                
-                int L = i;
-                int R = j;
-                while(L<=R) {
-                    int mid = (L + R)/2;
-                    int check = S[j] - S[mid-1];
-                    if(check == sum/2) {
-                        answer = sum/2;
-                        break;
-                    }
-                    
-                    if(check < sum/2) {
-                        R = mid-1;
-                    }else {
-                        L = mid+1;
-                    }
-                }               
+                // 더 작은 쪽을 확장
+                if (left <= right) {
+                    if (l == 0) break;
+                    l--;
+                    left += cookie[l];
+                } else { // right < left
+                    if (r == n - 1) break;
+                    r++;
+                    right += cookie[r];
+                }
             }
         }
         return answer;
