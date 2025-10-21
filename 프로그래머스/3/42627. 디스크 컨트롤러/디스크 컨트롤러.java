@@ -1,71 +1,58 @@
 import java.util.*;
 class Solution {
-    PriorityQueue<Node> pq = new PriorityQueue<>((x,y) -> {
-        if(x.task == y.task) {
-            if(x.start == y.start) {
-                return x.num - y.num;
-            }else {
-                return x.start - y.start;
-            }
-        }else {
-            return x.task - y.task;
-        }
-    });
     public int solution(int[][] jobs) {
-        int answer = 0;
-        
-        PriorityQueue<Node> init = new PriorityQueue<>((x,y) -> {
-            if(x.start == y.start) {
-                if(x.task == y.task) {
+        PriorityQueue<Task> pq = new PriorityQueue<>((x,y) -> {
+            if(x.len == y.len) {
+                if(x.s == y.s) {
                     return x.num - y.num;
                 }else {
-                    return x.task - y.task;
+                    return x.s - y.s;
                 }
             }else {
-                return x.start - y.start;
+                return x.len - y.len;
             }
         });
         
-        for(int i=0; i<jobs.length; i++) {
-            init.offer(new Node(i, jobs[i][0], jobs[i][1]));
+        int n = jobs.length;
+        Arrays.sort(jobs, (x,y) -> (x[0] - y[0]));
+        // last >= s면, 끝나기 전에 작업이 추가 되어야하니까 pq에 넣기 continue;
+        // last < s면? last를 answer에 추가하고, 다음 pq.peek값으로 업데이트 (반복)
+        // 결국 last >= s 인 순간까지 온다 -> pq에 넣기 
+        // 마지막에 pq 빼면서 다 추가해주기
+        
+        
+        int answer = 0;
+        int last = 0;
+        int idx = 0;
+        int cnt = 0;
+        while(cnt < n) { 
+            while(idx < n && jobs[idx][0] <= last) { // 현재 시각보다 빠르게 들어옴
+                pq.offer(new Task(jobs[idx][1], jobs[idx][0], idx));
+                idx++;
+            }
+            
+            if(pq.isEmpty()) {
+                last = Math.max(last, jobs[idx][0]); 
+                continue;
+            }
+            
+            Task cur = pq.poll(); // 가장 짧은 작업 하나 처리
+            last += cur.len;
+            answer += last - cur.s;
+            cnt++;
         }
         
-        int time = 0; // 끝나는 작업 시간 
-        while(!pq.isEmpty() || !init.isEmpty()) {
-            if(pq.isEmpty()) {
-                pq.offer(init.poll());          
-            }
-            
-            Node now = pq.poll();
-            if(time < now.start) {
-                time = now.start;
-            }
-                      
-            // 대기 작업 추가
-            while(!init.isEmpty()) {
-                if(time + now.task >= init.peek().start) {
-                    pq.offer(init.poll());
-                }else {
-                    break;
-                }
-            }
-            
-            int value = time + now.task - now.start;
-            answer += value;
-            time += now.task;
-        }
-            
-        return answer/jobs.length;
+        return answer/n;
     }
 }
 
-class Node {
+class Task {
+    int len;
+    int s;
     int num;
-    int start;
-    int task;
-    Node(int num, int start, int task) {
-        this.task = task;
-        this.start = start;
+    Task(int len, int s, int num) {
+        this.len = len;
+        this.s = s;
         this.num = num;
     }
 }
