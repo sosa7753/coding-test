@@ -2,8 +2,7 @@ import java.util.*;
 import java.io.*;
 class Main {
     static int N, Q;
-    static List<Integer> list = new ArrayList<>();
-    static int[] answer;
+    static int[] answer, next;
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st = new StringTokenizer(br.readLine());
@@ -11,9 +10,10 @@ class Main {
         N = Integer.parseInt(st.nextToken());
         Q = Integer.parseInt(st.nextToken());
         answer = new int[N+1];
+        next = new int[N+2]; // N+1 인덱스는 탈출 조건 
         
-        for(int i=1; i<=N; i++) {
-            list.add(i);
+        for(int i=1; i<=N+1; i++) {
+            next[i] = i;
         }
         
         for(int i=0; i<Q; i++) {
@@ -22,11 +22,13 @@ class Main {
             int e = Integer.parseInt(st.nextToken());
             int v = Integer.parseInt(st.nextToken());
             
-            int idx = binarySearch(s); 
-            while(!list.isEmpty() && idx < list.size() && list.get(idx) <=e) {
-                answer[list.remove(idx)] = v;   
+            int pos = find(s);
+            while(pos <= e) {
+                answer[pos] = v; // 칠할 곳이 남아있으면 색칠하기
+                int old = pos; // old는 현재 칠한 idx
+                pos = find(pos+1); // 다음 위치의 안칠해진 구간으로 업데이트
+                next[old] = pos; // 그곳으로 현재 idx에서 연결하기
             }
-            
         }
         
         StringBuilder sb = new StringBuilder();
@@ -36,13 +38,8 @@ class Main {
         System.out.print(sb);
     }
     
-    public static int binarySearch(int t) { // 시작 idx를 찾는 것
-        int l = 0; int r = list.size();
-        while(l < r) {
-            int mid = (l+r)/2;
-            if(list.get(mid) < t) l = mid+1;
-            else r = mid;
-        }
-        return l;
+    public static int find(int x) {
+        if(next[x] == x) return x;
+        return next[x] = find(next[x]);
     }
 }
