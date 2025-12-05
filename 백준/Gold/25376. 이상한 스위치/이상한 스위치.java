@@ -2,13 +2,13 @@ import java.util.*;
 import java.io.*;
 class Main {
   static int N;
-  static Map<Integer, Integer> map = new HashMap<>();
+  static int[] on;
   public static void main(String[] args) throws IOException {
     BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
     StringTokenizer st;
 
     N = Integer.parseInt(br.readLine());
-
+       
     st = new StringTokenizer(br.readLine());
     int start = 0;
     int answer = 0;
@@ -16,9 +16,8 @@ class Main {
       start |= (1 << i) * Integer.parseInt(st.nextToken());
       answer |= (1 << i);
     }
-    start = ((1<<N) - 1) & start;
-    answer = ((1<<N) - 1) & answer;
 
+    on = new int[N];  
     for(int i=0; i<N; i++) {
       int v = 0;
       st = new StringTokenizer(br.readLine());
@@ -29,8 +28,7 @@ class Main {
         v |= (1<<t);
       }
 
-      v = ((1<<N) - 1) & v;
-      map.put(i, v);
+      on[i] = v;
     }
 
     System.out.print(BFS(start, answer));
@@ -38,7 +36,7 @@ class Main {
 
   public static int BFS(int start, int answer) {
     Set<Integer> set = new HashSet<>();
-    Queue<int[]> q = new LinkedList<>();
+    ArrayDeque<int[]> q = new ArrayDeque<>();
     q.offer(new int[]{start, 0});
     set.add(start);
 
@@ -52,7 +50,7 @@ class Main {
       for(int i=0; i<N; i++) {
         if((cur & (1<<i)) != 0) continue;
 
-        int nc = cur ^ (map.get(i));
+        int nc = cur ^ (on[i]);
         if(set.contains(nc)) continue;
 
         set.add(nc);
