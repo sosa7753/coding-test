@@ -13,8 +13,8 @@ class Main {
     int start = 0;
     int answer = 0;
     for(int i=0; i<N; i++) {
-      start += (1 << i) * Integer.parseInt(st.nextToken());
-      answer += (1 << i);
+      start |= (1 << i) * Integer.parseInt(st.nextToken());
+      answer |= (1 << i);
     }
     start = ((1<<N) - 1) & start;
     answer = ((1<<N) - 1) & answer;
@@ -23,10 +23,10 @@ class Main {
       int v = 0;
       st = new StringTokenizer(br.readLine());
       int len = Integer.parseInt(st.nextToken());
-      v += (1<<i);
+      v |= (1<<i);
       for(int j=0; j<len; j++) { // 모든 걸 역순서로 생각
         int t = Integer.parseInt(st.nextToken()) -1;
-        v += (1<<t);
+        v |= (1<<t);
       }
 
       v = ((1<<N) - 1) & v;
