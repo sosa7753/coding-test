@@ -41,8 +41,8 @@ class Main {
         int fs = P - T; int fe = P + T; // 1단계
         int origin = binarySearch(P);
        
-        int ss = Math.max(arr[origin], fs);
-        int se = Math.min(arr[origin+1], fe);
+        int ss = Math.max(arr[origin]+1, fs);
+        int se = Math.min(arr[origin+1]-1, fe);
         
         if((fe%2 == 0 && ss%2 == 1) || (fe%2 == 1 && ss%2 == 0)) ss++;
         if((fe%2 == 0 && se%2 == 1) || (fe%2 == 1 && se%2 == 0)) se--;
