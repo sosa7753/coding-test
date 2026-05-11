@@ -19,19 +19,11 @@ class Solution {
         long len = r - l + 1;
         long cL = 1;
         long cR = len;
-        while(cL <= (crr[n] - len+1) && cR <= crr[n]) {
+        while(cR <= crr[n]) {
             int left = binarySearch(cL);
             int right = binarySearch(cR);
             
             long pre = sum(arr, cL, cR);
-            if(cR == crr[n]) { // 끝에 도달한 경우
-                if(pre == K) {
-                    C++;
-                }
-                break;
-            }
-            
-            
             if(crr[left] == cL || crr[right] == cR) { // 어느 한 지점이 기점
                 if(pre == K) {
                     C++;
@@ -50,7 +42,8 @@ class Solution {
                 }
             }else {
                 long ex = arr[right] - arr[left];
-                if(ex !=0 && (K-pre)%ex == 0 && (K-pre)/ex <= nextLen && (K-pre)/ex >= 0) {
+                if(ex !=0 && (K-pre)%ex == 0 && 
+                   (K-pre)/ex <= nextLen && (K-pre)/ex >= 0) {
                     C++; 
                 }     
             }         
@@ -67,15 +60,13 @@ class Solution {
         int left = binarySearch(l); // l이 기점이거나 left보다 큼
         int right = binarySearch(r); // r이 기점이거나 right보다 큼
 
-        // l이 기점이 아니면 crr[left] + 1 ~ l-1 까지 뺴기 
         long exL = 0;
         if(crr[left] == l) {
             exL = arr[left-1];  
         }else {
             exL = - (l-1 - crr[left]) * arr[left];
         }
-             
-        // right는 빼기
+
         long exR = 0;
         if(crr[right] < r) {
             exR = (r - crr[right]) * arr[right];
