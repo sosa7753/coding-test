@@ -1,6 +1,7 @@
 import java.util.*;
 class Solution {
-    Map<Integer, Map<String, Integer>> map = new HashMap<>();
+    int max = 101;
+    Map<Integer, Map<Integer, Integer>> map = new HashMap<>();
     public int solution(int[][] points, int[][] routes) {    
         map.put(0, new HashMap<>());
         for(int[] route : routes) { // 각 루트 경로에 대해 
@@ -12,7 +13,7 @@ class Solution {
         }
         
         int answer = 0;
-        for(Map<String, Integer> m : map.values()) {
+        for(Map<Integer, Integer> m : map.values()) {
             for(int v : m.values())  {
                 if(v >=2) answer++;
             }
@@ -39,9 +40,8 @@ class Solution {
         return idx;
     }
     
-    public String inverter(int r, int c) {
-        StringBuilder sb = new StringBuilder();
-        return sb.append(r).append(" ").append(c).toString();
+    public int inverter(int r, int c) {
+        return r*max + c;
     }
     
     public void insert(int r, int c, int idx) {
@@ -49,8 +49,8 @@ class Solution {
             map.put(idx, new HashMap<>());
         }
             
-        String key = inverter(r, c);
-        Map<String, Integer> tmp = map.get(idx);
+        int key = inverter(r, c);
+        Map<Integer, Integer> tmp = map.get(idx);
         tmp.put(key, tmp.getOrDefault(key, 0) + 1);
     }
 }
