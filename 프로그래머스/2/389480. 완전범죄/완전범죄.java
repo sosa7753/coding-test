@@ -1,50 +1,40 @@
 import java.util.*;
 class Solution {
-    int sumA = 0;
-    int sumB = 0;
-    int[][] dp;
-    public int solution(int[][] info, int n, int m) {   
-        for(int i=0; i<info.length; i++) {
-            sumA += info[i][0];
-            sumB += info[i][1];
-        }
-        Arrays.sort(info, (x,y) -> (x[0] - y[0]));       
-        dp = new int[info.length+1][n];
+    public int solution(int[][] info, int n, int m) {       
+        // 2^40으로 모든 기준 보기는 힘듦 -> DP 방식
+        int len = info.length;
+        Arrays.sort(info, (x,y) -> (x[1] - y[1]));
         
-        for(int i=1; i<=info.length; i++) {
-            for(int j=1; j<n; j++) {
-                if(j-info[i-1][0] < 0) {
-                    dp[i][j] = dp[i-1][j];
-                }else {
-                    dp[i][j] = Math.max(dp[i-1][j], dp[i-1][j-info[i-1][0]] + info[i-1][1]);
-                }
-            }
+        // index 0을 훔치면 1에 반영, .. len-1을 훔치면 len에 반영
+        int[][] dp = new int[len+1][m]; // 인덱스 0의 물건을 훔칠 때 B의 j흔적에서 A 누적 최솟 값
+        for(int i=1; i<=len; i++) {
+            Arrays.fill(dp[i], Integer.MAX_VALUE);
         }
+                     
+        for(int i=0; i<len; i++) { // 인덱스 0의 물건을 훔칠 때,
+            int a = info[i][0];
+            int b = info[i][1];
+            for(int j=0; j<m; j++) { // 현재 B의 흔적
+                if(dp[i][j] == Integer.MAX_VALUE) continue;
                 
-        int L = 0;
-        int R = n-1;
+                // A가 훔치는 경우
+                if(dp[i][j] + a < n) {
+                    dp[i+1][j] = Math.min(dp[i+1][j], dp[i][j] + a);
+                }
+                
+                // B가 훔치는 경우
+                if(j + b < m) {
+                    dp[i+1][j+b] = Math.min(dp[i+1][j+b], dp[i][j]);
+                }     
+            }        
+        }
         
-        while(L<=R) {
-            int mid = (L + R)/2;
-            if(check(mid, m)) {
-                R = mid-1;
-            }else {
-                L = mid+1;
-            }
+        int answer = Integer.MAX_VALUE;
+        for(int i=0; i<m; i++) {
+            answer = Math.min(answer, dp[len][i]);
         }
-          
-        if(L == n) {
-            return -1;
-        }else {
-            return L;
-        }
-    }
-    public boolean check(int mid, int m) { // A가 mid 흔적으로 훔칠 수 있는지 체크 
-        int max = dp[dp.length-1][mid];
         
-        if(m <= sumB - max) {
-            return false;
-        }
-        return true;       
+        if(answer == Integer.MAX_VALUE) return -1;
+        return answer;
     }
-}
+} 
