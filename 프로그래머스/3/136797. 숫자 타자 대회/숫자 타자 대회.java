@@ -1,82 +1,70 @@
 import java.util.*;
 class Solution {
-    int[][] w = new int[10][10]; // s -> e 로 가는 최소 가중치
-    int[][][] dp;
-    int n;
+    int INF = Integer.MAX_VALUE;
     public int solution(String numbers) {
-        init();
+        int[][] cost = move();
+             
+        int[][] prev = new int[10][10]; // 왼손 위치, 오른손 위치
+        for(int i=0; i<10; i++) {
+            Arrays.fill(prev[i], INF);
+        }
         
-        n = numbers.length();
-        dp = new int[n][10][10]; // 누를 인덱스 , 왼손 위치 , 오른손 위치
-        
-        for(int i=0; i<n; i++) {
-            for(int j=0; j<10; j++) {
-                Arrays.fill(dp[i][j], -1);
+        prev[4][6] = 0;
+        for(char c : numbers.toCharArray()) {
+            int t = c - '0';
+            int[][] cur = new int[10][10];
+            for(int[] row : cur) Arrays.fill(row, INF);
+            
+            for(int L=0; L<10; L++) {
+                for(int R=0; R<10; R++) {
+                    if(prev[L][R] >= INF) continue;
+                    int v = prev[L][R];
+                    
+                    if(L == t) {
+                        cur[t][R] = Math.min(cur[t][R], v+1);
+                    }else if(R == t) {
+                        cur[L][t] = Math.min(cur[L][t], v+1);
+                    }else {
+                        cur[t][R] = Math.min(cur[t][R], v + cost[L][t]);
+                        cur[L][t] = Math.min(cur[L][t], v + cost[R][t]);
+                    }
+                }
             }
+            prev = cur;
         }
         
-        return solve(numbers, 0, 4, 6);
+        int answer = INF;
+        for(int[] row : prev) {
+            for(int v : row) answer = Math.min(answer, v);
+        }
+        return answer;
     }
     
-    public int solve(String numbers, int idx, int left, int right) {
-        if(idx == n) {
-            return 0;
-        }
-        
-        if(dp[idx][left][right] != -1) {
-            return dp[idx][left][right];
-        }
-        
-        int next = numbers.charAt(idx) - '0';
-        int value = Integer.MAX_VALUE;
-        
-        
-        if(next != right) { // 왼손 이동
-            value = Math.min(solve(numbers, idx+1, next, right) 
-                             + w[left][next], value);
-        }
-         
-        if(next != left) { // 오른쪽 이동
-            value = Math.min(solve(numbers, idx+1, left, next) + w[right][next], value);
-        }
-        return dp[idx][left][right] = value;
-    }
-    
-    public void init() {
-        int[] start = new int[2];
-        int[] end = new int[2];
-        
+    public int[][] move() {
+        int[][] map = new int[10][10];
         for(int i=0; i<10; i++) {
             for(int j=0; j<10; j++) {
                 if(i == j) {
-                    w[i][j] = 1;
+                    map[i][j] = 1;
                     continue;
                 }
                 
-                if(i == 0) {
-                    start[0] = 3;
-                    start[1] = 1;
-                }else {
-                    start[0] = (i-1)/3;
-                    start[1] = (i-1)%3;
-                }
-                
-                if(j == 0) {
-                    end[0] = 3;
-                    end[1] = 1;
-                }else {
-                    end[0] = (j-1)/3;
-                    end[1] = (j-1)%3;
-                }
-                
-                int[] moving = new int[2];
-                moving[0] = Math.abs(start[0] - end[0]);
-                moving[1] = Math.abs(start[1] - end[1]);
-                
-                int min = Math.min(moving[0], moving[1]); // 대각 횟수
-                int max = Math.max(moving[0], moving[1]) - min; // 직진 횟수
-                w[i][j] = min * 3 + max * 2;
+                int s = i;
+                int e = j;
+                if(s == 0) s = 11;
+                if(e == 0) e = 11;
+        
+                int sr = (s-1)/3; int sc = (s-1)%3;
+                int er = (e-1)/3; int ec = (e-1)%3;
+        
+                int y = Math.abs(sr - er);
+                int x = Math.abs(sc - ec);
+        
+                int max = Math.max(y, x);
+                int min = Math.min(y, x);
+                map[i][j] = min * 3 + (max-min)*2; 
             }
-        }
+        }  
+        return map;
     }
 }
