@@ -1,69 +1,61 @@
 import java.util.*;
 class Solution {
-    PriorityQueue<Song> pq = new PriorityQueue<>((x,y) -> {
-        if(x.interval == y.interval) {
-            return x.s - y.s;
-        }else {
-            return y.interval - x.interval;
-        }
-    });
-    public String solution(String m, String[] musicinfos) {
-        String M = change(m);
-        
+    String originsh[] = {"A#", "C#", "D#", "F#", "G#"};
+    String nextsh[] = {"O", "P", "Q", "R", "S"};
+    PriorityQueue<Song> pq = new PriorityQueue<>((x,y) -> 
+                                (x.startTime - y.startTime));
+    public String solution(String m, String[] musicinfos) {      
         for(String music : musicinfos) {
-            String[] mu = music.split(",");
-            int start = time(mu[0]);
-            int gap = time(mu[1]) - start;
+            String[] str = music.split(",");
+            int start = time(str[0]); int end = time(str[1]);
+            int gap = end - start;
+
+            String value = invert(str[3]); // 원본
+            value = value.repeat(gap/value.length()) + value.substring(0, gap%value.length());
             
-            String check = change(mu[3]);   
-            char[] c = check.toCharArray();
-            
-            int cnt = 0;
-            StringBuilder sb = new StringBuilder();
-            while(cnt < gap) {
-                sb.append(c[cnt%c.length]);
-                cnt++;
-            }
-            
-            
-            if(sb.toString().contains(M)) {
-                Song song = new Song(start, gap, mu[2]);
-                pq.offer(song);
-            }
-            
+            pq.offer(new Song(start, gap, str[2], value));
         }
         
-        if(pq.isEmpty()) {
-            return "(None)";
+        m = invert(m);
+               
+        int max = 0; // 재생 시간
+        String answer = "";
+        while(!pq.isEmpty()) {
+            Song now = pq.poll();
+            if(max >= now.gap) continue;
+            
+            if(now.value.contains(m)) {
+                max = now.gap;
+                answer = now.name;
+            }
         }
         
-        return pq.poll().name;
+        if(max == 0) return "(None)";     
+        return answer;
+    }
+    
+    public String invert(String s) {
+        for(int i=0; i<originsh.length; i++) {
+            s = s.replace(originsh[i], nextsh[i]);
+        }
+        return s;
     }
     
     public int time(String s) {
         String[] str = s.split(":");
         return Integer.parseInt(str[0]) * 60 + Integer.parseInt(str[1]);
     }
-    
-    public String change(String s) {
-        String result = s;
-        String[] origin = {"A#", "B#", "C#", "D#", "F#", "G#"};
-        String[] next = {"H", "I", "J", "K", "L", "M"};
-        
-        for(int i=0; i<next.length; i++) {
-            result = result.replace(origin[i], next[i]);
-        }
-        return result;
-    }
 }
 
 class Song {
-    int s;
-    int interval;
-    String name; 
-    Song(int s, int interval, String name) {
-        this.s = s;
-        this.interval = interval;
+    int startTime;
+    int gap;
+    String name;
+    String value;
+    Song(int startTime, int gap, String name, String value) {
+        this.startTime = startTime;
+        this.gap = gap;
         this.name = name;
+        this.value = value;
     }
 }
