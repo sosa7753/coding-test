@@ -1,68 +1,55 @@
 import java.util.*;
 class Solution {
-    int[] dx = {0, 1, 0, -1};
-    int[] dy = {-1, 0, 1, 0};
-    boolean[][] visited;
+    int[] dr = {-1, 0, 1, 0};
+    int[] dc = {0, 1, 0, -1};
     public int[] solution(String[] maps) {
-        PriorityQueue<Integer> pq = new PriorityQueue<>();
-    
-        visited = new boolean[maps.length][maps[0].length()];
+        List<Integer> list = new ArrayList<>();
         
-        for(int i=0; i<maps.length; i++) {
-            for(int j=0; j<maps[0].length(); j++) {
-                if(visited[i][j] || maps[i].charAt(j) == 'X') {
-                    continue;                
-                }                
-                pq.offer(DFS(maps, i, j));
+        int n = maps.length;
+        int m = maps[0].length();
+        int[][] visited = new int[n][m];
+        
+        for(int i=0; i<n; i++) {
+            for(int j=0; j<m; j++) {
+                if(maps[i].charAt(j) == 'X') continue;
+                if(visited[i][j] == 1) continue;
+                
+                list.add(BFS(i, j, maps, visited));
             }
         }
-        if(pq.isEmpty()) {
-            return new int[] {-1};
-        }
         
-        int[] answer = new int[pq.size()];
-        int idx = 0;
-        while(!pq.isEmpty()) {
-            answer[idx++] = pq.poll();
+        if(list.isEmpty()) return new int[]{-1};
+        
+        Collections.sort(list);
+        int[] answer = new int[list.size()];
+        for(int i=0; i<list.size(); i++) {
+            answer[i] = list.get(i);
         }
         return answer;
     }
     
-    public int DFS(String[] maps, int r, int c) {
-        Stack<int[]> stack = new Stack<>();
-        stack.push(new int[] {r, c});
+    public int BFS(int row, int col, String[] maps, int[][] visited) {
+        Queue<int[]> q = new LinkedList<>();
+        q.offer(new int[]{row, col});
+        visited[row][col] = 1;
         
-        visited[r][c] = true;  
-        int sum = 0;
-            
-        while(!stack.isEmpty()) {
-            int[] now = stack.pop();
-            
-            sum += maps[now[0]].charAt(now[1]) - '0';
-            System.out.print(sum +  " ");
+        int cnt = 0;
+        while(!q.isEmpty()) {
+            int[] now = q.poll();
+            int r = now[0]; int c = now[1];
+            cnt += maps[r].charAt(c) - '0';
             
             for(int i=0; i<4; i++) {
-                int row =  now[0] + dy[i];
-                int col =  now[1] + dx[i];
-            
-                if(row < 0 || row > maps.length-1 || 
-                   col < 0 || col > maps[0].length()-1) {
-                    continue;
+                int nr = r + dr[i];
+                int nc = c + dc[i];
+                if(nr < 0 || nr > maps.length-1 || nc < 0 || nc > maps[0].length()-1) continue;
+                if(maps[nr].charAt(nc) == 'X') continue;
+                if(visited[nr][nc] != 1) {
+                    visited[nr][nc] = 1;
+                    q.offer(new int[]{nr, nc});
                 }
-            
-                            
-                if(maps[row].charAt(col) == 'X') {
-                    continue;
-                }
-                
-                if(visited[row][col]) {
-                    continue;
-                }
-                
-                visited[row][col] = true;
-                stack.push(new int[] {row, col});
-            }           
+            }
         }
-        return sum;
+        return cnt;
     }
 }
