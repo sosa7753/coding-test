@@ -1,49 +1,56 @@
 import java.util.*;
 class Solution {
     public int solution(int alp, int cop, int[][] problems) {
-        int maxAl = alp;
-        int maxCo = cop;
         
+        int maxAl = 0;
+        int maxCo = 0;
         for(int[] problem : problems) {
             maxAl = Math.max(maxAl, problem[0]);
             maxCo = Math.max(maxCo, problem[1]);
         }
         
-        if(maxAl == alp && maxCo == cop) {
-            return 0;
-        }
+        int a = Math.min(alp, maxAl);
+        int c = Math.min(cop, maxCo);
         
-        alp = Math.min(alp, maxAl);
-        cop = Math.min(cop, maxCo);
-        
-        int[][] dp = new int[maxAl + 1][maxCo + 1];
-        for(int i=0; i<=maxAl; i++) {
+        int[][] dp = new int[maxAl+1][maxCo+1];
+        for(int i=0; i<dp.length; i++) {
             Arrays.fill(dp[i], Integer.MAX_VALUE);
         }
         
-        dp[alp][cop] = 0;
-        
-        for(int i=alp; i<=maxAl; i++) {
-            for(int j=cop; j<=maxCo; j++) {
-                if(i+1 <= maxAl) {
-                    dp[i+1][j] = Math.min(dp[i+1][j], dp[i][j] + 1);
-                }
-                
-                if(j+1 <= maxCo) {
-                    dp[i][j+1] = Math.min(dp[i][j+1], dp[i][j] + 1);
-                }
+        dp[a][c] = 0;
+        for(int i=0; i<=maxAl; i++) {
+            for(int j=0; j<=maxCo; j++) {
+                if(dp[i][j] == Integer.MAX_VALUE) continue;
                 
                 for(int[] problem : problems) {
-                    if(problem[0] <= i && problem[1] <= j) {
-                        int nextAl = Math.min(maxAl, i+problem[2]);
-                        int nextCo = Math.min(maxCo, j+problem[3]);
-                        dp[nextAl][nextCo] = Math.min(
-                        dp[nextAl][nextCo], dp[i][j] + problem[4]
-                        );
+                    if(i >= problem[0] && j>=problem[1]) {
+                        int al = Math.min(maxAl, i+problem[2]);
+                        int co = Math.min(maxCo, j+problem[3]);
+                        if(dp[al][co] > dp[i][j] + problem[4]) {
+                            dp[al][co] = dp[i][j] + problem[4];
+                        }
+                    }
+                }
+                
+                // 알고력 올리기
+                for(int k=1; k<=maxAl; k++) {
+                    if(i+k <= maxAl) {
+                        if(dp[i+k][j] > dp[i][j] + k) {
+                            dp[i+k][j] = dp[i][j] + k;
+                        }
+                    }
+                }
+                
+                for(int k=1; k<=maxCo; k++) {
+                    if(j+k <= maxCo) {
+                        if(dp[i][j+k] > dp[i][j] + k) {
+                            dp[i][j+k] = dp[i][j] + k;
+                        }
                     }
                 }
             }
         }
+        
         return dp[maxAl][maxCo];
     }
 }
